@@ -1,6 +1,6 @@
 {
   "name": "Monastery Clicker - Zen Path",
-  "short_name": "Zen Clicker",
+  "short_name": "Monastery Clicker",
   "description": "Un jeu de méditation zen",
   "start_url": "index.html",
   "display": "standalone",
