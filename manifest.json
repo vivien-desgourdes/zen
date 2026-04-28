@@ -1,25 +1,18 @@
 {
-  "short_name": "ZenPath",
-  "name": "⛩️ MONASTERY CLICKER — ZEN PATH",
-  "description": "Un jeu de clicker zen et méditatif dans l'univers d'un monastère japonais.",
+  "name": "Monastery Clicker - Zen Path",
+  "short_name": "Zen Clicker",
+  "description": "Un jeu de méditation zen",
+  "start_url": "index.html",
+  "display": "standalone",
+  "theme_color": "#0d0a08",
+  "background_color": "#0d0a08",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/190/190605.png",
-      "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/190/190605.png",
-      "type": "image/png",
-      "sizes": "512x512",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230d0a08'/%3E%3Ctext x='50' y='68' font-size='60' text-anchor='middle' fill='%23d4af37'%3E⛩️%3C/text%3E%3C/svg%3E",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ],
-  "start_url": "./index.html",
-  "background_color": "#0d0a08",
-  "display": "standalone",
-  "scope": "./",
-  "theme_color": "#0d0a08",
-  "orientation": "portrait-primary"
+  ]
 }
