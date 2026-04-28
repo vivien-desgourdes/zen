@@ -867,7 +867,7 @@ const TALENT_TREE = {
           { id: 'jade_affinity', name: 'Affinité du Jade', emoji: '💎', desc: '+8% bonus par Relique', maxLevel: 3, costPerLevel: 6, effect: 'jadeBonus', value: 0.08, requires: null }
         ],
         [
-          { id: 'spirit_bond', name: 'Lien des Esprits', emoji: '🐉', desc: 'Cap multiplicateur esprits ×8→×12', maxLevel: 1, costPerLevel: 12, effect: 'petCap', value: 4, requires: 'sage_wisdom' },
+          { id: 'spirit_bond',  name: 'Lien des Esprits', emoji: '🐉', desc: '+2% PS par esprit unique',  maxLevel: 3,  costPerLevel: 8,  effect: 'uniqueSpiritBonus',  value: 0.02, requires: 'sage_wisdom' }
           { id: 'enso_mastery', name: 'Maîtrise de l\'Enso', emoji: '🎋', desc: 'Enso parfait +40% bonus (→+28%)', maxLevel: 2, costPerLevel: 8, effect: 'ensoBonus', value: 0.07, requires: 'jade_affinity' }
         ],
         [
@@ -1690,7 +1690,7 @@ function getClickVal(){
 
 function getPS(){
   const base = state.items.reduce((a,i)=>a+(i.qty*i.ps),0);
-  const petCapMax = 8+(getTalentEffect('petCap')||0);
+ // const petCapMax = 8+(getTalentEffect('petCap')||0);
  // const petM = Math.min(state.pets.reduce((a,p)=>a+getSpiritMultWithStars(p),1), petCapMax);
 const petM = 1 + state.pets.reduce((a,p) => a + (getSpiritMultWithStars(p) - 1), 0);
   const jadeBase = 0.05 + getTalentEffect('jadeBonus') + (getCurrentWorld().bonuses.jadeBonus||0);
