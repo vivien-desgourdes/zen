@@ -1691,7 +1691,8 @@ function getClickVal(){
 function getPS(){
   const base = state.items.reduce((a,i)=>a+(i.qty*i.ps),0);
   const petCapMax = 8+(getTalentEffect('petCap')||0);
-  const petM = Math.min(state.pets.reduce((a,p)=>a*getSpiritMultWithStars(p),1), petCapMax);
+ // const petM = Math.min(state.pets.reduce((a,p)=>a+getSpiritMultWithStars(p),1), petCapMax);
+const petM = 1 + state.pets.reduce((a,p) => a + (getSpiritMultWithStars(p) - 1), 0);
   const jadeBase = 0.05 + getTalentEffect('jadeBonus') + (getCurrentWorld().bonuses.jadeBonus||0);
   const jadeM = 1+(state.jadeRelics*jadeBase);
   const comboM = 1+(Math.min(state.combo,30)*0.005);
