@@ -1775,7 +1775,7 @@ function getPS(){
   const reincarnationBonus = 1+(state.prestigeCount*0.10);
   const legendPS = state.pets.filter(p=>getSpiritMultWithStars(p)>=20).length * getTalentEffect('legendPS');
   const worldSpiritM = getWorldSpiritMult() * getEventBonus('petMult');
-  return (base*petM*jadeM*comboM*feverM*ensoM*psM*worldM*eventM*prestigePS*reincarnationBonus*worldSpiritM) + legendPS;
+  return (base*petM*jadeM*comboM*feverM*ensoM*psM*worldM*eventM*prestigePS*reincarnationBonus*worldSpiritM*uniqueBonus) + legendPS;
 }
 
 function itemCost(it){ return Math.floor(it.baseCost*Math.pow(1.15,it.qty)); }
