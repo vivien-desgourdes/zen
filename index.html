@@ -528,6 +528,9 @@
         <div class="fever-label">⚡ Transe</div>
         <div class="fever-track"><div class="fever-fill" id="fever-bar"></div></div>
     </div>
+      <div style="font-size:0.55rem;opacity:0.5;margin-top:4px;">
+  📈 Prochain niveau: <span id="next-level-progress">0</span>%
+      </div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;gap:6px;">
         <div id="world-indicator" style="font-size:0.62rem;opacity:0.7;flex:1;"></div>
         <div id="event-indicator" style="font-size:0.62rem;color:#ffd700;flex:1;text-align:right;"></div>
@@ -1822,6 +1825,10 @@ function updateUI(){
   const pd=document.getElementById('pity-display');
   const pityMax=50-Math.floor(getTalentEffect('pityReduce'));
   if(pd) pd.textContent=`✨ Garantie Légendaire dans ${Math.max(0,pityMax-state.pityCounter)} offrandes`;
+// 3 lignes pour progression prestige
+const nextCost = nextPrestigeCost();
+const progress = Math.min(99, Math.floor(state.allTimeScore / nextCost * 100));
+document.getElementById('next-level-progress').textContent = progress;
   updateWorldIndicator();
   checkAchievements();
   updateNextSutra();
