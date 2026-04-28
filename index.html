@@ -1795,6 +1795,11 @@ function fusionRequired(){ return getTalentEffect('fusionCost')>0 ? 3 : 5; }
 
 // ==================== UI UPDATE ====================
 function updateUI(){
+  // 3 lignes pour progression prestige
+const nextCost = nextPrestigeCost();
+const progress = Math.min(99, Math.floor(state.allTimeScore / nextCost * 100));
+document.getElementById('next-level-progress').textContent = progress;
+  
   const ps=getPS(), cv=getClickVal();
   document.getElementById('main-score').textContent=fmt(state.score);
   document.getElementById('ps-display').textContent=`⚡ ${fmt(ps)}/s`;
@@ -1825,10 +1830,6 @@ function updateUI(){
   const pd=document.getElementById('pity-display');
   const pityMax=50-Math.floor(getTalentEffect('pityReduce'));
   if(pd) pd.textContent=`✨ Garantie Légendaire dans ${Math.max(0,pityMax-state.pityCounter)} offrandes`;
-// 3 lignes pour progression prestige
-const nextCost = nextPrestigeCost();
-const progress = Math.min(99, Math.floor(state.allTimeScore / nextCost * 100));
-document.getElementById('next-level-progress').textContent = progress;
   updateWorldIndicator();
   checkAchievements();
   updateNextSutra();
