@@ -70,9 +70,10 @@
     .the-star:active{transform:scale(0.94);}
     .bell-ring{animation:ring 0.14s ease-in-out!important;}
     @keyframes ring{0%{transform:scale(1) rotate(0);}25%{transform:scale(0.91) rotate(-6deg);}75%{transform:scale(1.06) rotate(6deg);}100%{transform:scale(1) rotate(0);}}
-    .shockwave{position:absolute;border:3px solid var(--gold);border-radius:50%;pointer-events:none;animation:wave 0.55s ease-out forwards;}
-    .shockwave.fever-wave{border-color:#fff;box-shadow:0 0 12px #fff;}
-    @keyframes wave{0%{width:140px;height:140px;opacity:1;border-width:6px;}100%{width:420px;height:420px;opacity:0;border-width:1px;}}
+    .zen-ripple{position:fixed;border-radius:50%;pointer-events:none;z-index:2;animation:zenRipple 2s ease-out forwards;}
+    @keyframes zenRipple{0%{width:0;height:0;margin-left:0;margin-top:0;opacity:0.5;border:2px solid var(--gold);}100%{width:400px;height:400px;margin-left:-200px;margin-top:-200px;opacity:0;border:1px solid var(--gold);}}
+    .zen-ripple.fever{animation:zenRippleFever 2s ease-out forwards;}
+    @keyframes zenRippleFever{0%{width:0;height:0;margin-left:0;margin-top:0;opacity:0.6;border:2px solid #fff;box-shadow:0 0 8px #fff;}100%{width:500px;height:500px;margin-left:-250px;margin-top:-250px;opacity:0;border:1px solid #fff;}}
     .click-pop{position:fixed;font-weight:900;pointer-events:none;animation:popUp 0.9s ease-out forwards;z-index:9999;text-shadow:0 2px 4px black;font-family:'Baloo 2',cursive;}
     @keyframes popUp{0%{transform:translateY(0) scale(1.2);opacity:1;}100%{transform:translateY(-70px) scale(0.8);opacity:0;}}
     .combo-pop{position:fixed;font-size:1rem;font-weight:900;pointer-events:none;animation:comboPop 1s ease-out forwards;z-index:9999;color:#ff8c00;}
@@ -81,21 +82,24 @@
     /* ÉLÉMENTS FIXES AU-DESSUS DE LA NAV */
     #combo-display{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);font-size:0.8rem;font-weight:700;color:#ff8c00;text-shadow:0 0 10px #ff4500;opacity:0;transition:opacity 0.3s;white-space:nowrap;font-family:'Baloo 2','Segoe UI',Arial,sans-serif;pointer-events:none;z-index:80;}
     #combo-display.visible{opacity:1;}
-    #next-sutra-bar{position:fixed;bottom:78px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:456px;background:rgba(8,5,3,0.96);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:8px;font-size:0.6rem;z-index:80;}
+    #next-sutra-bar{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);width:calc(100% - 24px);max-width:456px;background:rgba(8,5,3,0.96);border:1px solid rgba(212,175,55,0.2);border-radius:10px;padding:5px 10px;display:flex;align-items:center;gap:8px;font-size:0.6rem;z-index:80;}
     #next-sutra-bar .ns-emoji{font-size:0.9rem;flex-shrink:0;}
     #next-sutra-bar .ns-info{flex:1;min-width:0;}
     #next-sutra-bar .ns-title{color:var(--gold);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     #next-sutra-bar .ns-prog-track{width:100%;height:3px;background:rgba(255,255,255,0.08);border-radius:2px;margin-top:3px;}
     #next-sutra-bar .ns-prog-fill{height:100%;background:var(--gold);border-radius:2px;transition:width 0.5s;}
-    #click-mult-display{position:fixed;bottom:64px;left:50%;transform:translateX(-50%);font-size:0.48rem;opacity:0.45;white-space:nowrap;pointer-events:none;z-index:80;}
+    #click-mult-display{position:fixed;bottom:68px;left:50%;transform:translateX(-50%);font-size:0.5rem;opacity:0.5;white-space:nowrap;pointer-events:none;z-index:80;}
     
     /* NAV */
-    .nav-bar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
-    .nav-btn{display:flex;flex-direction:column;align-items:center;color:rgba(244,228,188,0.35);font-size:0.55rem;font-weight:700;cursor:pointer;transition:color 0.15s,background 0.15s;letter-spacing:0.5px;padding:4px 0;border-radius:10px;position:relative;}
+    .nav-bar{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;}
+    .nav-btn{display:flex;flex-direction:column;align-items:center;color:rgba(244,228,188,0.35);font-size:0.52rem;font-weight:700;cursor:pointer;transition:color 0.15s,background 0.15s;letter-spacing:0.5px;padding:4px 0;border-radius:10px;position:relative;}
     .nav-btn.active{color:var(--gold);background:rgba(212,175,55,0.1);}
-    .nav-btn span{font-size:1.3rem;}
+    .nav-btn span{font-size:1.2rem;}
     .nav-notif{position:absolute;top:2px;right:8px;width:8px;height:8px;background:#ff4444;border-radius:50%;border:1px solid #000;animation:pulse-dot 1s infinite alternate;}
     @keyframes pulse-dot{from{transform:scale(0.8);}to{transform:scale(1.2);}}
+    
+    /* CHEST NOTIF BADGE */
+    .notif-badge{position:absolute;top:-5px;right:-8px;background:#ff4444;color:white;font-size:0.55rem;padding:2px 5px;border-radius:10px;font-weight:bold;}
     
     /* PANELS */
     .panel{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:480px;height:85vh;background:var(--panel-bg);border-radius:28px 28px 0 0;padding:12px 16px 12px;z-index:200;transition:transform 0.32s ease;display:flex;flex-direction:column;border-top:3px solid var(--gold);}
@@ -331,19 +335,14 @@
         100% { opacity: 0; transform: translateX(-50%) translateY(-40px); }
     }
 
+    /* RANG */
+    #player-rank { font-size:0.58rem; letter-spacing:1.5px; opacity:0.75; margin-top:2px; font-family:'Cinzel Decorative',serif; transition:color 0.6s; text-align:center; }
+
     /* CYCLE JOUR/NUIT */
     body.time-dawn  { --ink: #0d0804; filter: sepia(0.08) brightness(1.02); }
     body.time-day   { --ink: #100c08; filter: sepia(0.04) brightness(1.05); }
     body.time-dusk  { --ink: #120805; filter: sepia(0.15) brightness(0.98) hue-rotate(-5deg); }
     body.time-night { --ink: #05080f; filter: sepia(0.0) brightness(0.92) hue-rotate(10deg); }
-
-    /* ===== PROCHAIN SUTRA ===== */
-    #next-sutra-bar { position:fixed; bottom:82px; left:50%; transform:translateX(-50%); width:calc(100% - 24px); max-width:456px; background:rgba(8,5,3,0.95); border:1px solid rgba(212,175,55,0.2); border-radius:10px; padding:5px 10px; display:flex; align-items:center; gap:8px; font-size:0.6rem; z-index:80; }
-    #next-sutra-bar .ns-emoji { font-size:0.9rem; flex-shrink:0; }
-    #next-sutra-bar .ns-info { flex:1; min-width:0; }
-    #next-sutra-bar .ns-title { color:var(--gold); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    #next-sutra-bar .ns-prog-track { width:100%; height:3px; background:rgba(255,255,255,0.08); border-radius:2px; margin-top:3px; }
-    #next-sutra-bar .ns-prog-fill { height:100%; background:var(--gold); border-radius:2px; transition:width 0.5s; }
 
     /* MULTIPLICATEUR CLIC */
     #click-mult-display { position:fixed; bottom:68px; left:50%; transform:translateX(-50%); font-size:0.5rem; opacity:0.5; text-align:center; letter-spacing:0.5px; z-index:80; white-space:nowrap; pointer-events:none; }
@@ -448,6 +447,29 @@
     .journal-stats-row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     .journal-stat { font-size: 0.52rem; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 20px; opacity: 0.7; }
 
+    /* CHEST SYSTEM */
+    .chest-slot { background: rgba(0,0,0,0.4); border-radius: 16px; padding: 12px; margin-bottom: 12px; border: 1px solid rgba(212,175,55,0.2); transition: all 0.2s; }
+    .chest-slot.unlockable { border-color: var(--gold); animation: chestGlow 1.5s infinite alternate; cursor: pointer; }
+    .chest-slot.waiting { opacity: 0.6; }
+    .chest-slot.empty { opacity: 0.4; cursor: pointer; }
+    .chest-slot.empty:hover { opacity: 0.7; border-color: rgba(212,175,55,0.4); }
+    @keyframes chestGlow { from { box-shadow: 0 0 5px rgba(212,175,55,0.2); } to { box-shadow: 0 0 15px rgba(212,175,55,0.6); } }
+    .chest-header { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .chest-emoji { font-size: 2.5rem; }
+    .chest-info { flex: 1; }
+    .chest-name { font-weight: 700; font-size: 0.9rem; color: var(--gold); }
+    .chest-desc { font-size: 0.6rem; opacity: 0.6; margin-top: 2px; }
+    .chest-progress { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; margin: 8px 0; }
+    .chest-progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--jade2)); width: 0%; transition: width 1s linear; }
+    .chest-timer { font-size: 0.6rem; color: var(--jade2); text-align: right; font-family: monospace; letter-spacing: 1px; }
+    .chest-rewards { font-size: 0.55rem; opacity: 0.5; margin-top: 6px; display: flex; gap: 12px; }
+    .chest-select { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+    .chest-select-btn { background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); border-radius: 12px; padding: 8px 12px; cursor: pointer; transition: all 0.1s; display: flex; flex-direction: column; align-items: center; min-width: 70px; }
+    .chest-select-btn:active { transform: scale(0.95); }
+    .chest-select-btn.disabled { opacity: 0.3; cursor: not-allowed; }
+    .chest-select-emoji { font-size: 1.6rem; }
+    .chest-select-name { font-size: 0.6rem; font-weight: 700; margin-top: 4px; }
+    .chest-select-time { font-size: 0.5rem; opacity: 0.5; }
   </style>
 </head>
 <body class="world-japan">
@@ -520,6 +542,7 @@
     <button id="music-btn" onclick="toggleMusic()" style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,175,55,0.3);border-radius:50%;width:28px;height:28px;font-size:0.9rem;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;z-index:2;">🔇</button>
     <div class="temple-badge" id="temple-rank">TEMPLE NIV. 1</div>
     <div id="main-score">0</div>
+    <div id="player-rank">— Novice —</div>
     <div class="score-sub">
         <span id="ps-display">⚡ 0/s</span>
         <span id="click-val-display">👆 +1/clic</span>
@@ -558,6 +581,7 @@
       <div class="nav-btn" id="nav-missions" onclick="openPanel('missions',this)"><span>📜</span>SUTRAS</div>
       <div class="nav-btn" id="nav-enso" onclick="openPanel('enso',this)"><span>🎋</span>ENSO</div>
       <div class="nav-btn" id="nav-worlds" onclick="openPanel('worlds',this)"><span>🌍</span>MONDES</div>
+      <div class="nav-btn" id="nav-chests" onclick="openPanel('chests',this)"><span>🎁</span>COFFRES</div>
       <div class="nav-btn" id="nav-stats" onclick="openPanel('stats',this)"><span>🧘</span>ZEN</div>
     </nav>
   </div>
@@ -627,6 +651,13 @@
     <div id="worlds-content" style="flex:1;overflow-y:auto;min-height:0;padding-bottom:30px;"></div>
   </div>
 
+  <!-- CHESTS PANEL -->
+  <div id="panel-chests" class="panel" style="display:flex;flex-direction:column;">
+    <div class="panel-header" style="flex-shrink:0;"><div class="panel-title">🎁 Coffres Sacrés</div><button class="panel-close" onclick="closePanels()">✕</button></div>
+    <div style="font-size:0.65rem;opacity:0.6;margin-bottom:10px;padding:0 4px;flex-shrink:0;">Les coffres s'ouvrent avec le temps. Revenez plus tard pour les débloquer !</div>
+    <div id="chests-content" style="flex:1;overflow-y:auto;min-height:0;padding-bottom:30px;"></div>
+  </div>
+
   <div id="panel-stats" class="panel">
     <div class="panel-header"><div class="panel-title">🧘 Méditation</div><button class="panel-close" onclick="closePanels()">✕</button></div>
     <div class="panel-scroll" id="stats-area"></div>
@@ -657,6 +688,43 @@ function showBanner(msg){
   const b=document.getElementById('levelup-banner'),lt=document.getElementById('levelup-text');
   if(lt) lt.textContent=msg;
   if(b){b.classList.add('show');setTimeout(()=>b.classList.remove('show'),3000);}
+}
+
+// ==================== RANGS ====================
+const RANKS = [
+  { min:0,         label:'— Novice —',              color:'#aaaaaa' },
+  { min:1000,      label:'〜 Aspirant 〜',            color:'#88bb88' },
+  { min:10000,     label:'✦ Disciple ✦',             color:'#66aacc' },
+  { min:100000,    label:'❖ Moine Zen ❖',            color:'#9966dd' },
+  { min:1000000,   label:'✸ Maître du Temple ✸',     color:'#d4af37' },
+  { min:10000000,  label:'❋ Sage Éveillé ❋',         color:'#ff9900' },
+  { min:100000000, label:'⊕ Gardien du Dharma ⊕',   color:'#ff5555' },
+  { min:1e9,       label:'☯ Bouddha Vivant ☯',       color:'#ffffff' },
+  { min:1e12,      label:'✺ L\'Origine du Vide ✺',   color:'#cc88ff' },
+];
+
+function updateRank(){
+  const el = document.getElementById('player-rank'); if(!el) return;
+  const rank = [...RANKS].reverse().find(r => state.allTimeScore >= r.min) || RANKS[0];
+  if(el.textContent !== rank.label){
+    el.style.color = rank.color;
+    el.style.textShadow = `0 0 10px ${rank.color}66`;
+    el.textContent = rank.label;
+  }
+}
+
+// ==================== ONDE ZEN ====================
+let lastRippleTime = 0;
+function spawnZenRipple(x, y){
+  const now = Date.now();
+  if(now - lastRippleTime < 300) return;
+  lastRippleTime = now;
+  const r = document.createElement('div');
+  r.className = 'zen-ripple' + (state.isFever ? ' fever' : '');
+  r.style.left = x + 'px';
+  r.style.top = y + 'px';
+  document.body.appendChild(r);
+  setTimeout(()=>r.remove(), 2000);
 }
 
 // ==================== CYCLE JOUR/NUIT ====================
@@ -797,7 +865,6 @@ function updateMusicButton() {
 
 // ===================== DATA =====================
 const ZEN_QUOTES = [
-  // Nature (8)
   "Le bambou plie sous la neige, mais ne rompt pas. Sois le bambou. — Sagesse zen",
   "Une goutte d'eau contient l'océan. Regarde mieux. — Dōgen Zenji",
   "La rivière contourne les rochers avec grâce. Ne résiste pas. — Lao Tseu",
@@ -806,8 +873,6 @@ const ZEN_QUOTES = [
   "La fleur éclot sans se demander si quelqu'un la regardera. — Bouddha",
   "Le papillon ne juge pas sa lenteur comme chenille. Il attend. — Sagesse zen",
   "L'arbre ancien étend ses racines pour tenir, pas pour conquérir. — Sagesse zen",
-  
-  // Quotidien (8)
   "Laver son bol, ranger ses affaires, boire son thé. C'est méditer. — Thich Nhat Hanh",
   "Quand tu marches, marche. Quand tu manges, mange. — Dōgen Zenji",
   "Préparer son repas en pleine conscience, c'est nourrir son âme. — Thich Nhat Hanh",
@@ -816,8 +881,6 @@ const ZEN_QUOTES = [
   "Range ta chambre, range ton esprit. — Dōgen Zenji",
   "Ouvrir une fenêtre suffit à changer l'air du cœur. — Sagesse zen",
   "Faire la queue devient méditation si tu es vraiment là. — Sagesse zen",
-  
-  // Pensées (8)
   "Tes pensées sont des clients qui passent. Tu n'as pas à les héberger. — Sagesse zen",
   "Laisse tes soucis sur le pas de la porte. Ils sauront t'attendre. — Dōgen Zenji",
   "Le mental raconte des histoires. Écoute sans croire. — Thich Nhat Hanh",
@@ -826,8 +889,6 @@ const ZEN_QUOTES = [
   "Tu n'es pas la voix dans ta tête. Tu es celui qui l'écoute. — Sagesse zen",
   "Entre deux pensées, il y a un espace immense. Installe-toi là. — Sōtō Zen",
   "Ne crois pas tout ce que ton mental te raconte. Il adore les drames. — Bouddha",
-  
-  // Lâcher-prise (8)
   "Ce qui est arrivé est arrivé. Ce qui viendra, viendra. Maintenant, reste. — Dōgen Zenji",
   "Lâcher prise, c'est accepter que tout change. — Thich Nhat Hanh",
   "La rivière ne remonte jamais à sa source. Ne regarde pas en arrière. — Lao Tseu",
@@ -835,60 +896,9 @@ const ZEN_QUOTES = [
   "La vasque se brise. Le souvenir s'estompe. Tout est impermanent. — Bouddha",
   "Ce soir, rien n'est comme ce matin. Et c'est parfait ainsi. — Tradition zen",
   "Le sablier s'écoule sans se plaindre. Imite-le. — Sōtō Zen",
-  "Ne porte pas deux fois le même fardeau. Hier est déjà loin. — Dōgen Zenji",
-  
-  // Divers
-  "Le silence n'est pas vide — il est plein de réponses. — Sōtō Zen",
-  "Lâche prise : ce qui tombe n'était pas à toi. — Bouddha",
-  "Respire. Ce moment est le seul vrai rendez-vous. — Thich Nhat Hanh",
-  "Observe tes pensées sans les juger. Tu n'es pas elles. — Dōgen Zenji",
-  "Accepte ce qui est. Lutter contre la réalité, c'est perdre deux fois. — Lao Tseu",
-  "La paix vient de l'intérieur. Ne la cherche pas à l'extérieur. — Bouddha",
-  "Ce que nous sommes est le résultat de ce que nous avons pensé. — Bouddha",
-  "La colère est un feu que tu allumes avec tes propres mains. — Bouddha",
-  "Sois ici. Vraiment. Le reste n'existe pas encore. — Thich Nhat Hanh",
-  "Le mental est un bon serviteur mais un maître tyrannique. — Dōgen Zenji",
-  "Chaque fin est un commencement déguisé. — Tradition zen",
-  "La gratitude transforme ce que tu as en assez. — Bouddha",
-  "Parfois, ne rien faire est l'action la plus puissante. — Lao Tseu",
-  "Comme l'eau, sois douce et pourtant imbattable. — Bruce Lee",
-  "La peur est une vague. Reste la roche silencieuse. — Ilchi Lee",
-  "Le passé est une histoire. Le futur, un rêve. Maintenant, la vie. — Bouddha",
-  "Tu es le ciel. Les pensées ne sont que des nuages. — Dōgen Zenji",
-  "La douleur est inévitable. La souffrance, optionnelle. — Bouddha",
-  "Ralentis. La vie se passe à cette vitesse. — Thich Nhat Hanh",
-  "Un pas après l'autre. Même le plus long chemin se termine. — Lao Tseu",
-  "La nature ne se presse pas, pourtant tout est accompli. — Lao Tseu",
-  "La fleur de lotus naît dans la boue, mais n'en garde aucune trace. — Bouddha",
-  "Les racines profondes ne craignent pas le vent. — Tradition zen",
-  "La joie ne se trouve pas en accumulant, mais en allégeant. — Thich Nhat Hanh",
-  "Comme un miroir, l'esprit pur reflète le monde sans le retenir. — Dōgen Zenji",
-  "Le mental agité est comme l'eau trouble. Laisse-la se déposer. — Dōgen Zenji",
-  "Ne te projette pas dans le futur. Sois ici, maintenant. — Thich Nhat Hanh",
-  "La montagne reste immobile, quelle que soit la tempête. Sois la montagne. — Sagesse zen",
-  "Si tu ne peux pas changer le vent, ajuste tes voiles. — Proverbe zen",
-  "L'éveil n'est pas une destination, c'est chaque pas du chemin. — Thich Nhat Hanh",
-  "Ne retiens pas le passé, ne projette pas l'avenir. Le présent suffit. — Bouddha",
-  "Le bambou plie sous la neige, mais ne rompt pas. Sois comme lui. — Sagesse zen",
-  "La sagesse commence quand tu as le courage de dire « je ne sais pas ». — Dōgen Zenji",
-  "Nettoyer le sol, ranger des pierres, boire du thé. C'est aussi méditer. — Thich Nhat Hanh",
-  "La perfection n'est pas un but. C'est la façon dont tu acceptes l'imperfection. — Sagesse zen",
-  "Un simple souffle d'air contient mille univers. Regarde mieux. — Dōgen Zenji",
-  "L'eau coule toujours vers la mer. Elle ne se demande jamais pourquoi. Sois l'eau. — Lao Tseu",
-  "Ne cherche pas la vérité à l'extérieur. La vérité est celle qui cherche. — Bouddha",
-  "Ferme les yeux. Écoute le silence. Il te parlera. — Thich Nhat Hanh",
-  "Un maître zen dit : « Quand j'ai faim, je mange. Quand j'ai sommeil, je dors. » — Kōan",
-  "La voie n'est pas dans le ciel. La voie est dans le cœur. — Bouddha",
-  "Quand tu réalises que tout est parfait, le ciel s'ouvre et la terre danse. — Sagesse zen",
-  "Ne coure pas après le bonheur. Sois le bonheur que tu cherches. — Bouddha",
-  "Le drap se déchire au moindre mouvement. Laisse-le tel quel. — Kōan zen",
-  "Un souffle de vent éteint une bougie mais attise un feu. Deviens le feu. — Sōtō Zen",
-  "La chute n'est pas un échec. C'est une opportunité d'apprendre à se relever. — Bouddha",
-  "Un arbre mort ne cherche pas l'ombre. Pourquoi toi ? — Dōgen Zenji",
-  "Le questionnement est la porte. L'acceptation est la clé. — Thich Nhat Hanh",
-  "Le rivage n'est jamais loin quand tu acceptes d'être la mer. — Sagesse zen",
-  "La méditation, c'est s'asseoir et ne rien faire. Parfois, c'est suffisant. — Dōgen Zenji"
+  "Ne porte pas deux fois le même fardeau. Hier est déjà loin. — Dōgen Zenji"
 ];
+
 const ITEMS = [
   { id:'incense',  name:'Encens',         emoji:'🪔', baseCost:25,        ps:0.1,   desc:'Exhale la sagesse' },
   { id:'monk',     name:'Moine Novice',   emoji:'🙇', baseCost:200,       ps:0.5,   desc:'+clic passif' },
@@ -1464,13 +1474,289 @@ let state = {
   spiritStars: {},
   totalEvoCount: 0,
   activeEventId: null,
-  goldenCaptured: 0
+  goldenCaptured: 0,
+  chestSlots: [
+    { type: null, endTime: 0, status: 'empty' },
+    { type: null, endTime: 0, status: 'empty' },
+    { type: null, endTime: 0, status: 'empty' }
+  ]
 };
 const PRESTIGE_BASE = 500000;
 
 // Enso
 let ensoDrawing=false, ensoPoints=[], ensoCtx=null, ensoCanvas=null;
 let currentPetTab='esprits', currentMissionTab='sutras';
+
+// ==================== CHEST SYSTEM ====================
+const CHEST_TYPES = {
+    wood:     { name: '🪵 Coffre en Bois',   emoji: '🪵', duration: 3600000,  rarityMult: 1.0, jadeMin: 1, jadeMax: 2, spirits: 1, color: '#b88746' },
+    silver:   { name: '🥈 Coffre Argenté',  emoji: '🥈', duration: 14400000, rarityMult: 1.5, jadeMin: 2, jadeMax: 5, spirits: 2, color: '#c0c0c0' },
+    gold:     { name: '🏆 Coffre Doré',    emoji: '🏆', duration: 43200000, rarityMult: 2.5, jadeMin: 5, jadeMax: 15, spirits: 3, color: '#ffd700' },
+    legendary:{ name: '✨ Coffre Légendaire', emoji: '✨', duration: 86400000, rarityMult: 5.0, jadeMin: 15, jadeMax: 40, spirits: 5, color: '#cc88ff' }
+};
+
+function initChests() {
+    if (state.chestSlots) {
+        // already loaded
+    }
+    updateChestTimers();
+}
+
+function updateChestTimers() {
+    const now = Date.now();
+    let anyUnlocked = false;
+    for (let i = 0; i < chestSlots.length; i++) {
+        const slot = chestSlots[i];
+        if (slot.status === 'opening' && slot.endTime <= now) {
+            slot.status = 'unlocked';
+            anyUnlocked = true;
+        } else if (slot.status === 'waiting' && slot.endTime && slot.endTime <= now) {
+            slot.status = 'unlocked';
+            anyUnlocked = true;
+        }
+    }
+    if (anyUnlocked) {
+        updateChestNotification();
+        renderChests();
+    }
+}
+
+function canAddChest() {
+    return chestSlots.some(slot => slot.status === 'empty');
+}
+
+function addChest(type) {
+    if (!canAddChest()) {
+        showBanner("❌ Pas de place ! Débloquez d'abord un coffre existant.");
+        return false;
+    }
+    const chest = CHEST_TYPES[type];
+    if (!chest) return false;
+    
+    const now = Date.now();
+    const emptyIndex = chestSlots.findIndex(slot => slot.status === 'empty');
+    if (emptyIndex === -1) return false;
+    
+    chestSlots[emptyIndex] = {
+        type: type,
+        endTime: now + chest.duration,
+        status: 'opening'
+    };
+    renderChests();
+    saveGame();
+    showBanner(`🎁 ${chest.emoji} ${chest.name} ajouté ! Il s'ouvrira dans ${formatChestTime(chest.duration)}.`);
+    return true;
+}
+
+function openChest(slotIndex) {
+    const slot = chestSlots[slotIndex];
+    if (!slot || slot.status !== 'unlocked') return;
+    
+    const chest = CHEST_TYPES[slot.type];
+    if (!chest) return;
+    
+    const jadeGain = Math.floor(Math.random() * (chest.jadeMax - chest.jadeMin + 1) + chest.jadeMin);
+    const spiritCount = chest.spirits;
+    const spiritResults = [];
+    
+    for (let i = 0; i < spiritCount; i++) {
+        let spirit = rollOneWithRarityBoost(chest.rarityMult);
+        spiritResults.push(spirit);
+        addSpiritXP(spirit.name, 5 + Math.floor(spirit.mult * 2));
+        state.pets.push({...spirit});
+        if (!state.discoveredSkins.includes(spirit.name)) state.discoveredSkins.push(spirit.name);
+    }
+    
+    state.jadeRelics += jadeGain;
+    state.score += jadeGain * 10;
+    
+    showChestRewards(chest, jadeGain, spiritResults);
+    
+    chestSlots[slotIndex] = { type: null, endTime: 0, status: 'empty' };
+    compactChestSlots();
+    
+    renderChests();
+    updateUI();
+    saveGame();
+    vibrateEvo();
+}
+
+function compactChestSlots() {
+    const nonEmpty = chestSlots.filter(s => s.status !== 'empty');
+    const newSlots = [
+        ...nonEmpty,
+        ...Array(3 - nonEmpty.length).fill({ type: null, endTime: 0, status: 'empty' })
+    ];
+    chestSlots.length = 0;
+    chestSlots.push(...newSlots);
+}
+
+function rollOneWithRarityBoost(boost) {
+    let pool = [...SPIRIT_RARITIES];
+    const ev = getActiveEvent();
+    const world = getCurrentWorld();
+    const exclusives = [
+        ...(ev?.exclusiveSpirits || []),
+        ...(world?.exclusiveSpirits || [])
+    ];
+    if (exclusives.length) {
+        const chanceEach = 0.025 * boost;
+        pool = pool.map(r => ({...r, chance: r.chance * (1 - chanceEach * exclusives.length)}));
+        exclusives.forEach(es => pool.push({...es, chance: chanceEach}));
+        const total = pool.reduce((s, r) => s + r.chance, 0);
+        pool.forEach(r => r.chance /= total);
+    } else {
+        pool = pool.map(r => ({...r, chance: r.chance * (r.mult >= 2.5 ? boost : 1)}));
+        const total = pool.reduce((s, r) => s + r.chance, 0);
+        pool.forEach(r => r.chance /= total);
+    }
+    
+    let r = Math.random(), acc = 0;
+    let selected = pool[0];
+    for (const p of pool) {
+        acc += p.chance;
+        if (r <= acc) { selected = p; break; }
+    }
+    return selected;
+}
+
+function showChestRewards(chest, jadeGain, spirits) {
+    const names = spirits.map(s => `${s.emoji} ${s.name}`).join(', ');
+    showBanner(`🎁 ${chest.emoji} ${chest.name} ouvert ! +${jadeGain} 💎 Reliques · Esprits : ${names}`);
+    createParticles(window.innerWidth/2, window.innerHeight/2, 30, chest.color);
+}
+
+function formatChestTime(ms) {
+    const hours = Math.floor(ms / 3600000);
+    const minutes = Math.floor((ms % 3600000) / 60000);
+    if (hours > 0) return `${hours}h${minutes > 0 ? ` ${minutes}m` : ''}`;
+    return `${minutes}m`;
+}
+
+function updateChestNotification() {
+    const hasUnlocked = chestSlots.some(slot => slot.status === 'unlocked');
+    const navBtn = document.getElementById('nav-chests');
+    if (!navBtn) return;
+    const existingBadge = navBtn.querySelector('.notif-badge');
+    if (hasUnlocked) {
+        if (!existingBadge) {
+            const badge = document.createElement('span');
+            badge.className = 'notif-badge';
+            badge.textContent = '🎁';
+            navBtn.style.position = 'relative';
+            navBtn.appendChild(badge);
+        }
+    } else {
+        if (existingBadge) existingBadge.remove();
+    }
+}
+
+function renderChests() {
+    const container = document.getElementById('chests-content');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    const header = document.createElement('div');
+    header.style.cssText = 'font-size:0.7rem;opacity:0.7;margin-bottom:12px;text-align:center;';
+    header.textContent = 'Ajoutez des coffres à votre file d\'attente (max 3). Ils s\'ouvrent automatiquement après le temps imparti.';
+    container.appendChild(header);
+    
+    for (let i = 0; i < chestSlots.length; i++) {
+        const slot = chestSlots[i];
+        const slotDiv = document.createElement('div');
+        slotDiv.className = 'chest-slot';
+        
+        if (slot.status === 'empty') {
+            slotDiv.classList.add('empty');
+            slotDiv.innerHTML = `
+                <div class="chest-header">
+                    <div class="chest-emoji">🔒</div>
+                    <div class="chest-info">
+                        <div class="chest-name">Slot libre</div>
+                        <div class="chest-desc">Ajoutez un coffre ci-dessous</div>
+                    </div>
+                </div>
+            `;
+        } else {
+            const chest = CHEST_TYPES[slot.type];
+            const now = Date.now();
+            let remaining = Math.max(0, slot.endTime - now);
+            let progress = 0;
+            let statusText = '';
+            let canOpen = false;
+            
+            if (slot.status === 'opening') {
+                progress = ((chest.duration - remaining) / chest.duration) * 100;
+                statusText = formatChestTime(remaining);
+                canOpen = false;
+                slotDiv.classList.add('waiting');
+            } else if (slot.status === 'unlocked') {
+                progress = 100;
+                statusText = 'PRÊT !';
+                canOpen = true;
+                slotDiv.classList.add('unlockable');
+            }
+            
+            slotDiv.innerHTML = `
+                <div class="chest-header">
+                    <div class="chest-emoji">${chest.emoji}</div>
+                    <div class="chest-info">
+                        <div class="chest-name">${chest.name}</div>
+                        <div class="chest-desc">${chest.spirits} esprit${chest.spirits>1?'s':''} · ${chest.jadeMin}-${chest.jadeMax} 💎</div>
+                    </div>
+                </div>
+                <div class="chest-progress">
+                    <div class="chest-progress-fill" style="width: ${progress}%; background: linear-gradient(90deg, ${chest.color}, var(--gold));"></div>
+                </div>
+                <div class="chest-timer">${statusText}</div>
+                <div class="chest-rewards">
+                    <span>🎁 +${chest.spirits} esprit(s)</span>
+                    <span>💎 ${chest.jadeMin}-${chest.jadeMax}</span>
+                </div>
+            `;
+            
+            if (canOpen) {
+                slotDiv.style.cursor = 'pointer';
+                slotDiv.addEventListener('click', () => openChest(i));
+            }
+        }
+        container.appendChild(slotDiv);
+    }
+    
+    const selectorDiv = document.createElement('div');
+    selectorDiv.className = 'chest-select';
+    selectorDiv.innerHTML = '<div style="width:100%;text-align:center;font-size:0.6rem;opacity:0.5;margin-bottom:6px;">➕ AJOUTER UN COFFRE</div>';
+    
+    const addToSlot = (type) => {
+        addChest(type);
+        setTimeout(() => renderChests(), 100);
+    };
+    
+    for (const [key, chest] of Object.entries(CHEST_TYPES)) {
+        const btn = document.createElement('div');
+        btn.className = 'chest-select-btn' + (!canAddChest() ? ' disabled' : '');
+        btn.innerHTML = `
+            <span class="chest-select-emoji">${chest.emoji}</span>
+            <span class="chest-select-name">${chest.name.split(' ').slice(1).join(' ')}</span>
+            <span class="chest-select-time">⏱️ ${formatChestTime(chest.duration)}</span>
+        `;
+        if (canAddChest()) {
+            btn.addEventListener('click', () => addToSlot(key));
+        }
+        selectorDiv.appendChild(btn);
+    }
+    container.appendChild(selectorDiv);
+    
+    if (window.chestInterval) clearInterval(window.chestInterval);
+    window.chestInterval = setInterval(() => {
+        if (document.getElementById('panel-chests')?.classList.contains('open')) {
+            updateChestTimers();
+            renderChests();
+        } else {
+            updateChestTimers();
+        }
+    }, 1000);
+}
 
 // ==================== V2: TALENT HELPERS ====================
 function getTalentLevel(id){ return state.talents[id] || 0; }
@@ -1587,7 +1873,6 @@ function getRarityTier(mult){
 
 function getSpiritXPNeeded(stars){ const costs=[0,150,500,1500,4000,10000]; return costs[stars] ?? 10000; }
 
-// Build a unified pool of ALL spirits (base + event + world exclusives)
 function getAllSpiritPool(){
   const pool = [...SPIRIT_RARITIES];
   const seen = new Set(pool.map(s=>s.name));
@@ -1639,7 +1924,6 @@ function renderEvolution(c){
   });
 }
 
-// V2: Journal tab
 function renderJournal(c){
   c.style.display='block';
   c.innerHTML='';
@@ -1651,7 +1935,6 @@ function renderJournal(c){
   c.appendChild(header);
   if(!discovered.length){ c.innerHTML+='<div style="opacity:0.4;text-align:center;padding:20px;">Invoquez des esprits pour remplir le journal.</div>'; return; }
 
-  // Section : découverts
   const secDisc=document.createElement('div');
   secDisc.style.cssText='font-size:0.6rem;letter-spacing:1px;color:var(--jade2);margin-bottom:8px;opacity:0.8;';
   secDisc.textContent='✅ DÉCOUVERTS';
@@ -1681,7 +1964,6 @@ function renderJournal(c){
     c.appendChild(entry);
   });
 
-  // Section : non découverts (silhouettes)
   const undiscovered = pool.filter(s=>!discovered.includes(s.name));
   if(undiscovered.length){
     const secUndisc=document.createElement('div');
@@ -1704,6 +1986,7 @@ function renderJournal(c){
     });
   }
 }
+
 function addSpiritXP(spiritName, xp){
   const mult = 1 + getTalentEffect('spiritXpMult');
   const finalXP = Math.floor(xp * mult);
@@ -1737,7 +2020,7 @@ function evolveSpiritToNextStar(spiritName){
 
 function getSpiritMultWithStars(spirit){
   const stars = state.spiritStars[spirit.name]||0;
-  const starBonus = 1 + stars*0.1; // +10% per star
+  const starBonus = 1 + stars*0.1;
   return spirit.mult * starBonus;
 }
 
@@ -1758,8 +2041,6 @@ function getClickVal(){
 
 function getPS(){
   const base = state.items.reduce((a,i)=>a+(i.qty*i.ps),0);
- // const petCapMax = 8+(getTalentEffect('petCap')||0);
- // const petM = Math.min(state.pets.reduce((a,p)=>a+getSpiritMultWithStars(p),1), petCapMax);
   const petM = 1 + state.pets.reduce((a,p) => a + (getSpiritMultWithStars(p) - 1), 0);
   const uniqueSpirits = new Set(state.pets.map(p => p.name)).size;
   const uniqueBonus = 1 + (getTalentEffect('uniqueSpiritBonus') * uniqueSpirits);
@@ -1797,10 +2078,9 @@ function fusionRequired(){ return getTalentEffect('fusionCost')>0 ? 3 : 5; }
 
 // ==================== UI UPDATE ====================
 function updateUI(){
-  // 3 lignes pour progression prestige
-const nextCost = nextPrestigeCost();
-const progress = Math.min(99, Math.floor(state.allTimeScore / nextCost * 100));
-document.getElementById('next-level-progress').textContent = progress;
+  const nextCost = nextPrestigeCost();
+  const progress = Math.min(99, Math.floor(state.allTimeScore / nextCost * 100));
+  document.getElementById('next-level-progress').textContent = progress;
   
   const ps=getPS(), cv=getClickVal();
   document.getElementById('main-score').textContent=fmt(state.score);
@@ -1836,8 +2116,9 @@ document.getElementById('next-level-progress').textContent = progress;
   checkAchievements();
   updateNextSutra();
   updateClickMult();
+  updateRank();
   renderStats();
-  renderWorlds(); // ensure worlds panel updates when PS changes (for unlock conditions)
+  renderWorlds();
 }
 
 // ==================== SHOP ====================
@@ -1948,7 +2229,6 @@ function renderAchievements(){
   });
 }
 
-// ==================== V2: EVENTS RENDERING ====================
 function renderEventsTab(container){
   const currentEvent = getActiveEvent();
   const month = new Date().getMonth()+1;
@@ -1974,7 +2254,6 @@ function renderEventsTab(container){
   });
 }
 
-// ==================== V2: TALENT TREE RENDERING ====================
 function renderTalentTree(){
   const c = document.getElementById('talent-tree-content'); if(!c) return;
   c.innerHTML='';
@@ -2042,7 +2321,6 @@ function rollOne(){
   state.pityCounter++;
   const pityMax = 50-Math.floor(getTalentEffect('pityReduce'));
 
-  // Build pool: base rarities + event exclusives + world exclusives
   let pool = [...SPIRIT_RARITIES];
   const ev = getActiveEvent();
   const world = getCurrentWorld();
@@ -2061,7 +2339,6 @@ function rollOne(){
   let sel = pool[0];
   const isGuaranteed = state.pityCounter >= pityMax;
   if(isGuaranteed){
-    // safety: if SPIRIT_RARITIES[25] doesn't exist, roll normally
     sel = SPIRIT_RARITIES[25] || pool[Math.floor(Math.random()*pool.length)];
     state.pityCounter = 0;
   } else {
@@ -2079,7 +2356,6 @@ function rollOne(){
 function summonPet(){
   const cost=summonCost(); if(state.score<cost) return;
   state.score-=cost;
-  // 1% chance d'esprit mystère
   if(Math.random()<0.01){
     showMysteryReveal(()=>{
       const sel=rollOne();
@@ -2202,7 +2478,6 @@ function renderPets(){
   });
 }
 
-// V2: Worlds panel
 function renderWorlds(){
   const c=document.getElementById('worlds-content'); if(!c) return;
   c.innerHTML='';
@@ -2226,7 +2501,6 @@ function renderWorlds(){
       ${!isUnlocked?`<div class="world-unlock-req">🔒 Requiert ${world.unlockPrestige} réincarnation${world.unlockPrestige>1?'s':''}</div>`:''}
       ${isUnlocked&&!isActive?`<button class="world-select-btn" style="background:linear-gradient(135deg,rgba(212,175,55,0.2),rgba(212,175,55,0.1));border:1px solid rgba(212,175,55,0.4);color:var(--gold);">🌍 Voyager vers ce monde</button>`:''}
       ${isActive?`<button class="world-select-btn" style="background:rgba(0,168,107,0.15);border:1px solid rgba(0,168,107,0.3);color:var(--jade2);cursor:default;">✅ Monde actuel</button>`:''}`;
-    // Attach event listener properly
     const switchBtn=card.querySelector('.world-select-btn:not([style*="cursor: default"])');
     if(switchBtn && !isActive && isUnlocked) switchBtn.addEventListener('click',()=>switchWorld(world.id));
     c.appendChild(card);
@@ -2336,7 +2610,6 @@ function showPerfectEnsoAnimation(){
 function handleClick(e){
   const v=getClickVal();
   state.score+=v; state.allTimeScore+=v; state.totalClicks++;
-  // V2: +1 XP tous les 20 clics manuels sur un esprit aléatoire de l'équipe
   if(state.totalClicks % 20 === 0 && state.pets.length > 0){
     const counts = {};
     state.pets.forEach(p=>{ if(!counts[p.name]) counts[p.name]=p; });
@@ -2365,12 +2638,10 @@ function handleClick(e){
   pop.style.cssText=`left:${cx}px;top:${cy}px;color:${state.isFever?'#fff':'var(--gold)'};font-size:${0.9+Math.min(state.combo,20)*0.02}rem;transform:translate(-50%,-50%);`;
   pop.textContent=`+${fmt(v)}`;document.body.appendChild(pop);setTimeout(()=>pop.remove(),900);
   createParticles(cx,cy,4,state.isFever?'#fff':'#d4af37');
+  spawnZenRipple(cx, cy);
   if(!state.isFever){ state.fever+=0.3*(1+getTalentEffect('feverSpeed')); if(state.fever>=100) startFever(); }
   starBtn.classList.remove('bell-ring');void starBtn.offsetWidth;starBtn.classList.add('bell-ring');
   setTimeout(()=>starBtn.classList.remove('bell-ring'),150);
-  const wave=document.createElement('div');wave.className='shockwave'+(state.isFever?' fever-wave':'');
-  wave.style.cssText='left:50%;top:50%;transform:translate(-50%,-50%);position:absolute;';
-  starBtn.appendChild(wave);setTimeout(()=>wave.remove(),560);
   updateUI(); saveGame();
 }
 
@@ -2410,12 +2681,11 @@ function confirmPrestige(){
   const jadeEventMult=getEventBonus('jadeBonus')||1;
   state.jadeRelics+=Math.floor(gain*jadeEventMult);
   state.templeLevel++; state.prestigeCount++;
-  // Reset progression
   state.score=0; state.allTimeScore=0; state.totalClicks=0;
   state.fever=0; state.isFever=false; state.feverCount=0;
   state.items.forEach(i=>i.qty=0);
   state.combo=0; state.pityCounter=0; state.ensoBonusEndTime=0;
-  state._justReset=true; // bloque le tick PS pendant 500ms
+  state._justReset=true;
   setTimeout(()=>{ state._justReset=false; }, 500);
   document.getElementById('star-zone').classList.remove('fever-active');
   const scoreEl=document.getElementById('main-score');
@@ -2483,7 +2753,6 @@ function openPanel(id,btn){
   const target=document.getElementById('panel-'+id);
   if(target) target.classList.add('open');
   if(btn) btn.classList.add('active');
-  // Cacher les éléments flottants
   const cd=document.getElementById('combo-display'); if(cd) cd.style.visibility='hidden';
   const sb=document.getElementById('next-sutra-bar'); if(sb) sb.style.visibility='hidden';
   const cm=document.getElementById('click-mult-display'); if(cm) cm.style.visibility='hidden';
@@ -2491,6 +2760,7 @@ function openPanel(id,btn){
   if(id==='missions'){ currentMissionTab='sutras'; setMissionTab('sutras'); renderAchievements(); }
   if(id==='talents') renderTalentTree();
   if(id==='worlds') renderWorlds();
+  if(id==='chests') renderChests();
   if(id==='stats') renderStats();
 }
 
@@ -2499,7 +2769,6 @@ function closePanels(){
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
   const defaultNav=document.getElementById('nav-shop');
   if(defaultNav) defaultNav.classList.add('active');
-  // Réafficher les éléments flottants
   const cd=document.getElementById('combo-display'); if(cd) cd.style.visibility='visible';
   const sb=document.getElementById('next-sutra-bar'); if(sb) sb.style.visibility='visible';
   const cm=document.getElementById('click-mult-display'); if(cm) cm.style.visibility='visible';
@@ -2558,7 +2827,8 @@ function saveGame(){
     spiritStars:state.spiritStars,
     totalEvoCount:state.totalEvoCount||0,
     goldenCaptured:state.goldenCaptured||0,
-    activeEventId:state.activeEventId||null
+    activeEventId:state.activeEventId||null,
+    chestSlots: chestSlots
   };
   localStorage.setItem('monasteryClickerSaveV2',JSON.stringify(saveData));
 }
@@ -2582,6 +2852,12 @@ function loadGame(){
     state.totalEvoCount=data.totalEvoCount||0;
     state.goldenCaptured=data.goldenCaptured||0;
     state.activeEventId=data.activeEventId||null;
+    if(data.chestSlots) chestSlots = data.chestSlots;
+    else chestSlots = [
+      { type: null, endTime: 0, status: 'empty' },
+      { type: null, endTime: 0, status: 'empty' },
+      { type: null, endTime: 0, status: 'empty' }
+    ];
     if(data.items) state.items.forEach(item=>{ const s=data.items.find(i=>i.id===item.id); if(s) item.qty=s.qty; });
     if(data.pets) state.pets=data.pets;
     if(data.achievements) state.achievements.forEach(ach=>{ const s=data.achievements.find(a=>a.id===ach.id); if(s) ach.completed=s.completed; });
@@ -2631,6 +2907,7 @@ window.onload=()=>{
     initShop(); renderPets(); renderAchievements(); updateUI();
     applyWorldTheme(state.currentWorld);
   }
+  initChests();
   initMusic();
   updateMusicButton();
   updateUI();
