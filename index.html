@@ -2440,49 +2440,6 @@ function clearEnsoCanvas(){
   ensoCtx.fillStyle='#1a1208'; ensoCtx.fillRect(0,0,ensoCanvas.width,ensoCanvas.height);
   ensoPoints=[]; ensoDrawing=false;
 }
-
-/*function evaluateEnso(){
-  try { navigator.vibrate(30); } catch(e) {}
-  if(ensoPoints.length<30){ showBanner("❌ Pas assez de tracé... Tracez un cercle entier !"); return; }
-  let cx=0,cy=0;
-  for(const p of ensoPoints){ cx+=p.x; cy+=p.y; }
-  cx/=ensoPoints.length; cy/=ensoPoints.length;
-  let distances=[];
-  for(const p of ensoPoints){ const dx=p.x-cx,dy=p.y-cy; distances.push(Math.sqrt(dx*dx+dy*dy)); }
-  const avgDist=distances.reduce((a,b)=>a+b,0)/distances.length;
-  let variance=0;
-  for(const d of distances) variance+=Math.pow(d-avgDist,2);
-  variance/=distances.length;
-  const regularity=Math.max(0,Math.min(1,1-(variance/(avgDist*avgDist))));
-  let totalDistance=0;
-  for(let i=1;i<ensoPoints.length;i++){
-    const dx=ensoPoints[i].x-ensoPoints[i-1].x,dy=ensoPoints[i].y-ensoPoints[i-1].y;
-    totalDistance+=Math.sqrt(dx*dx+dy*dy);
-  }
-  const circumference=2*Math.PI*avgDist;
-  const completeness=Math.min(1,totalDistance/circumference);
-  let score=Math.floor((regularity*0.6+completeness*0.4)*100);
-  score=Math.min(100,Math.max(0,score));
-  const ensoEventMult=getEventBonus('ensoMult')||1;
-  const baseReward=Math.floor(getPS()*15+500);
-  let multiplier=1,message='';
-  if(score>=90){ multiplier=3; message='🌟 Parfait ! L\'Enso est pur !'; createParticles(ensoCanvas.getBoundingClientRect().left+110,ensoCanvas.getBoundingClientRect().top+110,30,'#ffd700'); }
-  else if(score>=70){ multiplier=2; message='✨ Très bel Enso !'; }
-  else if(score>=50){ multiplier=1.5; message='🍃 Beau début...'; }
-  else { multiplier=1; message='🪨 Continue de tracer...'; }
-  const reward=Math.floor(baseReward*multiplier*ensoEventMult);
-  state.score+=reward; state.allTimeScore+=reward;
-  if(score>=80){
-    state.ensoPerfectCount++;
-    state.ensoBonusEndTime=Date.now()+120000;
-    showBanner(`🎋 Enso parfait ! +20% sagesse pendant 2 min ! +${fmt(reward)} sagesse`);
-    showPerfectEnsoAnimation();
-    try { navigator.vibrate([50,30,50]); } catch(e) {}
-  } else { showBanner(`🍃 ${message} +${fmt(reward)} sagesse`); }
-  document.getElementById('enso-score-display').innerHTML=`Dernier score : ${score}/100 — ${message}`;
-  clearEnsoCanvas(); updateUI(); saveGame();
-}
-*/
 function evaluateEnso(){
   try { navigator.vibrate(30); } catch(e) {}
   if(ensoPoints.length < 50){ 
