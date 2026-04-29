@@ -1545,6 +1545,11 @@ let state = {
   totalEvoCount: 0,
   activeEventId: null,
   goldenCaptured: 0
+  chestSlots: [
+  { type: null, endTime: 0, status: 'empty' },
+  { type: null, endTime: 0, status: 'empty' },
+  { type: null, endTime: 0, status: 'empty' }
+]
 };
 const PRESTIGE_BASE = 500000;
 
@@ -2571,6 +2576,7 @@ function openPanel(id,btn){
   if(id==='talents') renderTalentTree();
   if(id==='worlds') renderWorlds();
   if(id==='stats') renderStats();
+  if(id==='chests') renderChests();
 }
 
 function closePanels(){
@@ -2621,6 +2627,7 @@ function spawnGoldenSpirit(){
 // ==================== SAVE / LOAD ====================
 function saveGame(){
   const saveData={
+    chestSlots: state.chestSlots
     score:state.score, totalClicks:state.totalClicks, allTimeScore:state.allTimeScore,
     fever:state.fever, isFever:state.isFever, feverCount:state.feverCount,
     items:state.items.map(i=>({id:i.id,qty:i.qty})),
@@ -2666,6 +2673,8 @@ function loadGame(){
     if(data.achievements) state.achievements.forEach(ach=>{ const s=data.achievements.find(a=>a.id===ach.id); if(s) ach.completed=s.completed; });
     return true;
   } catch(e){ console.error('Load error:',e); return false; }
+if(data.chestSlots) state.chestSlots = data.chestSlots;
+else state.chestSlots = [{ type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }];
 }
 
 // ==================== BG PARTICLES ====================
