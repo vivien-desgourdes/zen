@@ -483,7 +483,6 @@
 
 /* Mini-jeu Pierre flottante - Version agrandie */
 
-/* Style de la pierre flottante */
 #floatingStone {
     position: absolute;
     bottom: 20px;
@@ -494,6 +493,7 @@
     transition: bottom 0.1s ease-out, transform 0.1s ease-out;
     filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
     z-index: 10;
+    transition: bottom 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1) !important;
 }
 
 /* Animation de flottaison */
@@ -3073,7 +3073,7 @@ function updateStoneHeight() {
     stone.style.bottom = newBottom + 'px';
     stone.style.left = '50%';
     stone.style.transform = 'translateX(-50%)';
-    
+
     // === NOUVEAU : Effet quand la pierre touche le sommet ===
     if(stoneCurrentStreak >= 30) {
         // Effet visuel sur la pierre
