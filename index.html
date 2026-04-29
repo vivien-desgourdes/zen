@@ -482,23 +482,39 @@
 .notif-badge{position:absolute;top:-5px;right:-8px;background:#ff4444;color:white;font-size:0.55rem;padding:2px 5px;border-radius:10px;font-weight:bold;}
 
 /* Mini-jeu Pierre flottante - Version agrandie */
-@keyframes waterRipple {
-  0% { transform: scaleX(0.8); opacity: 0.4; }
-  100% { transform: scaleX(1.2); opacity: 0.8; }
+
+/* Style de la pierre flottante */
+#floatingStone {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 3rem;
+    cursor: pointer;
+    transition: bottom 0.1s ease-out, transform 0.1s ease-out;
+    filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.5));
+    z-index: 10;
 }
-.stone-floating {
-  animation: stoneFloat 0.3s ease-in-out infinite alternate;
-}
+
+/* Animation de flottaison */
 @keyframes stoneFloat {
-  0% { filter: drop-shadow(0 0 5px rgba(212,175,55,0.3)); }
-  100% { filter: drop-shadow(0 0 15px rgba(212,175,55,0.6)); }
+    0% { filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.3)); }
+    100% { filter: drop-shadow(0 0 15px rgba(212, 175, 255, 0.6)); }
 }
-.stone-splash {
-  animation: splash 0.3s ease-out forwards;
+
+.stone-floating {
+    animation: stoneFloat 0.3s ease-in-out infinite alternate;
 }
+
+/* Éclaboussure */
 @keyframes splash {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.5); opacity: 0; }
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.stone-splash {
+    animation: splash 0.3s ease-out forwards;
+    pointer-events: none;
 }
   </style>
 </head>
@@ -3148,6 +3164,8 @@ function startStoneGame() {
     if(stone) {
         stone.classList.add('stone-floating');
         stone.style.bottom = '20px';
+        stone.style.left = '50%';
+        stone.style.transform = 'translateX(-50%)';
     }
     
     const statusDiv = document.getElementById('stoneStatus');
@@ -3189,6 +3207,9 @@ function updateStoneHeight() {
     const heightPercent = Math.min(1, stoneCurrentStreak / 30);
     const newBottom = 20 + (heightPercent * stoneMaxHeight);
     stone.style.bottom = newBottom + 'px';
+    // Conserver le centrage
+    stone.style.left = '50%';
+    stone.style.transform = 'translateX(-50%)';
 }
 
 function tapStone(event) {
@@ -3200,9 +3221,10 @@ function tapStone(event) {
     
     const stone = document.getElementById('floatingStone');
     if(stone) {
-        stone.style.transform = 'scale(1.2)';
+        // Animation sans casser le centrage
+        stone.style.transform = 'translateX(-50%) scale(1.2)';
         setTimeout(() => {
-            if(stone) stone.style.transform = 'scale(1)';
+            if(stone) stone.style.transform = 'translateX(-50%) scale(1)';
         }, 100);
         
         const splash = document.createElement('div');
@@ -3239,6 +3261,69 @@ function tapStone(event) {
         endStoneGame(true);
     }
 }
+
+function endStoneGame(success) {
+    if(!stoneGameActive) return;
+    stoneGameActive = false;
+    
+    if(stoneGameInterval) clearInterval(stoneGameInterval);
+    stoneGameInterval = null;
+    
+    const stone = document.getElementById('floatingStone');
+    if(stone) {
+        stone.classList.remove('stone-floating');
+        stone.style.bottom = '20px';
+        stone.style.left = '50%';
+        stone.style.transform = 'translateX(-50%)';
+        stone.style.filter = '';
+    }
+    
+    if(success) {
+        const baseReward = 800 + Math.floor(getPS() * 15);
+        const perfectBonus = stoneCurrentStreak >= 30 ? 500 : 0;
+        const reward = baseReward + perfectBonus;
+        
+        state.score += reward;
+        state.allTimeScore += reward;
+        
+        const statusDiv = document.getElementById('stoneStatus');
+        if(statusDiv) {
+            statusDiv.innerHTML = `🏆 MÉDITATION RÉUSSIE ! La pierre a atteint le sommet ! +${fmt(reward)} sagesse ! 🏆`;
+            statusDiv.style.color = 'var(--gold)';
+        }
+        
+        showBanner(`🪨 Pierre flottante ! +${fmt(reward)} sagesse !`);
+        createParticles(window.innerWidth/2, window.innerHeight/2, 40, '#ffd700');
+        try { navigator.vibrate([100, 50, 100, 50, 200]); } catch(e) {}
+        
+    } else {
+        const statusDiv = document.getElementById('stoneStatus');
+        if(statusDiv) {
+            statusDiv.innerHTML = '💧 La pierre retombe dans l\'eau... Réessayez pour la faire flotter plus haut ! 💧';
+            statusDiv.style.color = '#88aaff';
+        }
+    }
+    
+    setTimeout(() => {
+        if(!stoneGameActive) {
+            const statusDiv = document.getElementById('stoneStatus');
+            if(statusDiv) {
+                statusDiv.innerHTML = '👆 Tapez sur la pierre pour commencer la méditation ! Faites-la monter jusqu\'en haut !';
+                statusDiv.style.color = 'var(--jade2)';
+            }
+            stoneCurrentStreak = 0;
+            updateStoneUI();
+            const stone = document.getElementById('floatingStone');
+            if(stone) {
+                stone.style.bottom = '20px';
+                stone.style.left = '50%';
+                stone.style.transform = 'translateX(-50%)';
+            }
+        }
+    }, 3000);
+}
+
+
 
 function updateStoneUI() {
     const scoreSpan = document.getElementById('stoneScore');
