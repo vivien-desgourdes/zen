@@ -1544,7 +1544,7 @@ let state = {
   spiritStars: {},
   totalEvoCount: 0,
   activeEventId: null,
-  goldenCaptured: 0
+  goldenCaptured: 0,
   chestSlots: [
   { type: null, endTime: 0, status: 'empty' },
   { type: null, endTime: 0, status: 'empty' },
@@ -2627,7 +2627,7 @@ function spawnGoldenSpirit(){
 // ==================== SAVE / LOAD ====================
 function saveGame(){
   const saveData={
-    chestSlots: state.chestSlots
+    chestSlots: state.chestSlots,
     score:state.score, totalClicks:state.totalClicks, allTimeScore:state.allTimeScore,
     fever:state.fever, isFever:state.isFever, feverCount:state.feverCount,
     items:state.items.map(i=>({id:i.id,qty:i.qty})),
@@ -2671,10 +2671,10 @@ function loadGame(){
     if(data.items) state.items.forEach(item=>{ const s=data.items.find(i=>i.id===item.id); if(s) item.qty=s.qty; });
     if(data.pets) state.pets=data.pets;
     if(data.achievements) state.achievements.forEach(ach=>{ const s=data.achievements.find(a=>a.id===ach.id); if(s) ach.completed=s.completed; });
+   if(data.chestSlots) state.chestSlots = data.chestSlots;
+else state.chestSlots = [{ type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }];
     return true;
   } catch(e){ console.error('Load error:',e); return false; }
-if(data.chestSlots) state.chestSlots = data.chestSlots;
-else state.chestSlots = [{ type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }, { type: null, endTime: 0, status: 'empty' }];
 }
 
 // ==================== BG PARTICLES ====================
