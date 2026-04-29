@@ -3130,85 +3130,12 @@ function renderChests(){
     }
 
 // ==================== MINI-JEU : PIERRE QUI FLOTTE ====================
-
-        }
-    }, 800);
-}
-
-function tapStone(event) {
-    if(!stoneGameActive) return;
-    
-    // Au moins 10 points pour gagner
-    stoneCurrentStreak = Math.min(stoneCurrentStreak + 1, 99);
-    updateStoneUI();
-    
-    // Effet visuel du tap
-    const stone = document.getElementById('floatingStone');
-    if(stone) {
-        stone.style.transform = `translateY(${-Math.min(stoneCurrentStreak, 25)}px)`;
-        stone.style.transform = `translateY(${-Math.min(stoneCurrentStreak, 25)}px) scale(1.1)`;
-        setTimeout(() => {
-            if(stone) stone.style.transform = `translateY(${-Math.min(stoneCurrentStreak, 25)}px) scale(1)`;
-        }, 100);
-    }
-    
-    // Création de particules
-    if(event && event.clientX) {
-        createParticles(event.clientX, event.clientY, 5, '#d4af37');
-    } else {
-        const stoneRect = stone?.getBoundingClientRect();
-        if(stoneRect) {
-            createParticles(stoneRect.left + stoneRect.width/2, stoneRect.top + stoneRect.height/2, 5, '#d4af37');
-        }
-    }
-    
-    // Vibration légère
-    try { navigator.vibrate(20); } catch(e) {}
-    
-    // VICTOIRE : 30 taps réussis
-    if(stoneCurrentStreak >= 30) {
-        endStoneGame(true);
-    }
-}
-
-function updateStoneUI() {
-    const scoreSpan = document.getElementById('stoneScore');
-    if(scoreSpan) scoreSpan.textContent = stoneCurrentStreak;
-}
-
-function endStoneGame(success) {
-    if(!stoneGameActive) return;
-    stoneGameActive = false;
-    
-    if(stoneGameInterval) clearInterval(stoneGameInterval);
-    stoneGameInterval = null;
-    
-    const stone = document.getElementById('floatingStone');
-    if(stone) {
-        stone.classList.remove('stone-floating');
-        stone.style.transform = '';
-    }
-    
-    if(success) {
-        // Récompense : plus le compteur est haut, plus la récompense est grande
-        const baseReward = 500 + Math.floor(getPS() * 10);
-        const bonusMulti = Math.min(2, 1 + (stoneCurrentStreak - 30) / 30);
-        const reward = Math.floor(baseReward * bonusMulti);
-        
-        state.score += reward;
-        state.allTimeScore += reward;
-        
-        const statusDiv = document.getElementById('stoneStatus');
-        if(statusDiv) {
-            statusDiv.innerHTML = `🏆 MÉDITATION RÉUSSIE ! +${fmt(reward)} sagesse ! 🏆`;
-            statusDiv.style.color = 'var(--gold)';
-        }
 // ==================== MINI-JEU : PIERRE QUI FLOTTE (VERSION AMÉLIORÉE) ====================
 let stoneTapCount = 0;
 let stoneGameActive = false;
 let stoneGameInterval = null;
 let stoneCurrentStreak = 0;
-let stoneMaxHeight = 180; // Hauteur max en pixels
+let stoneMaxHeight = 180;
 
 function startStoneGame() {
     if(stoneGameActive) return;
@@ -3229,23 +3156,19 @@ function startStoneGame() {
         statusDiv.style.color = 'var(--jade2)';
     }
     
-    // Dégradation progressive de la flottaison (toutes les 0.8s)
     if(stoneGameInterval) clearInterval(stoneGameInterval);
     stoneGameInterval = setInterval(() => {
         if(!stoneGameActive) return;
         
-        // Réduction progressive du compteur
         stoneCurrentStreak = Math.max(0, stoneCurrentStreak - 2);
         stoneTapCount++;
         updateStoneUI();
         updateStoneHeight();
         
-        // Si le compteur tombe à 0 → échec
         if(stoneCurrentStreak <= 0 && stoneGameActive) {
             endStoneGame(false);
         }
         
-        // Effet d'alerte visuelle
         const stone = document.getElementById('floatingStone');
         if(stoneCurrentStreak < 10 && stoneCurrentStreak > 0 && stoneGameActive) {
             stone.style.filter = 'drop-shadow(0 0 8px #ffaa44)';
@@ -3263,8 +3186,6 @@ function startStoneGame() {
 function updateStoneHeight() {
     const stone = document.getElementById('floatingStone');
     if(!stone) return;
-    
-    // La hauteur monte proportionnellement au streak (max 180px)
     const heightPercent = Math.min(1, stoneCurrentStreak / 30);
     const newBottom = 20 + (heightPercent * stoneMaxHeight);
     stone.style.bottom = newBottom + 'px';
@@ -3273,12 +3194,10 @@ function updateStoneHeight() {
 function tapStone(event) {
     if(!stoneGameActive) return;
     
-    // Au moins 30 points pour gagner
     stoneCurrentStreak = Math.min(stoneCurrentStreak + 2, 30);
     updateStoneUI();
     updateStoneHeight();
     
-    // Effet visuel du tap
     const stone = document.getElementById('floatingStone');
     if(stone) {
         stone.style.transform = 'scale(1.2)';
@@ -3286,7 +3205,6 @@ function tapStone(event) {
             if(stone) stone.style.transform = 'scale(1)';
         }, 100);
         
-        // Effet d'éclaboussure
         const splash = document.createElement('div');
         splash.className = 'stone-splash';
         splash.style.position = 'absolute';
@@ -3302,16 +3220,13 @@ function tapStone(event) {
         setTimeout(() => splash.remove(), 300);
     }
     
-    // Création de particules
     const stoneRect = stone?.getBoundingClientRect();
     if(stoneRect) {
         createParticles(stoneRect.left + stoneRect.width/2, stoneRect.top + stoneRect.height/2, 8, '#d4af37');
     }
     
-    // Vibration
     try { navigator.vibrate(15); } catch(e) {}
     
-    // Message de progression
     if(stoneCurrentStreak >= 25 && stoneCurrentStreak < 30) {
         const statusDiv = document.getElementById('stoneStatus');
         if(statusDiv) {
@@ -3320,7 +3235,6 @@ function tapStone(event) {
         }
     }
     
-    // VICTOIRE : 30 taps réussis
     if(stoneCurrentStreak >= 30) {
         endStoneGame(true);
     }
@@ -3346,7 +3260,6 @@ function endStoneGame(success) {
     }
     
     if(success) {
-        // Récompense progressive
         const baseReward = 800 + Math.floor(getPS() * 15);
         const perfectBonus = stoneCurrentStreak >= 30 ? 500 : 0;
         const reward = baseReward + perfectBonus;
@@ -3372,7 +3285,6 @@ function endStoneGame(success) {
         }
     }
     
-    // Réinitialisation après 3 secondes
     setTimeout(() => {
         if(!stoneGameActive) {
             const statusDiv = document.getElementById('stoneStatus');
@@ -3388,7 +3300,7 @@ function endStoneGame(success) {
     }, 3000);
 }
 
-// Attacher les événements
+// Attacher les événements pour la pierre
 document.addEventListener('DOMContentLoaded', () => {
     const stone = document.getElementById('floatingStone');
     if(stone) {
@@ -3411,7 +3323,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-    
+
 // ==================== INIT ====================
 window.onload=()=>{
   applyDayNight();
@@ -3438,6 +3350,8 @@ window.onload=()=>{
     starBtn.addEventListener('touchstart',function(e){e.preventDefault();handleClick(e);});
   }
 };
+            
+
   </script>
 </body>
 </html>
