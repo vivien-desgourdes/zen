@@ -3422,10 +3422,61 @@ function endStoneGame(success) {
     if(stone) {
         stone.classList.remove('stone-floating');
         stone.style.bottom = '20px';
+        stone.style.left = '50%';
+        stone.style.transform = 'translateX(-50%)';
         stone.style.filter = '';
     }
     
     if(success) {
+        // === EFFET SPÉCIAL QUAND LA PIERRE TOUCHE LE HAUT ===
+        const stoneRect = stone?.getBoundingClientRect();
+        const centerX = stoneRect ? stoneRect.left + stoneRect.width / 2 : window.innerWidth / 2;
+        const centerY = stoneRect ? stoneRect.top + stoneRect.height / 2 : window.innerHeight / 2;
+        
+        // 1. Explosion de particules dorées
+        for(let i = 0; i < 40; i++) {
+            setTimeout(() => {
+                createParticles(centerX, centerY, 1, '#ffd700');
+            }, i * 15);
+        }
+        
+        // 2. Effet de rayonnement lumineux
+        const glow = document.createElement('div');
+        glow.style.position = 'fixed';
+        glow.style.left = (centerX - 60) + 'px';
+        glow.style.top = (centerY - 60) + 'px';
+        glow.style.width = '120px';
+        glow.style.height = '120px';
+        glow.style.borderRadius = '50%';
+        glow.style.background = 'radial-gradient(circle, rgba(255,215,0,0.7), transparent)';
+        glow.style.pointerEvents = 'none';
+        glow.style.zIndex = '9999';
+        glow.style.animation = 'summitGlow 0.6s ease-out forwards';
+        document.body.appendChild(glow);
+        setTimeout(() => glow.remove(), 600);
+        
+        // 3. Message "SOMMET ATTEINT"
+        const message = document.createElement('div');
+        message.textContent = '✨ SOMMET ATTEINT ! ✨';
+        message.style.position = 'fixed';
+        message.style.left = centerX + 'px';
+        message.style.top = (centerY - 50) + 'px';
+        message.style.transform = 'translateX(-50%)';
+        message.style.color = '#ffd700';
+        message.style.fontSize = '0.85rem';
+        message.style.fontWeight = 'bold';
+        message.style.textShadow = '0 0 10px gold';
+        message.style.whiteSpace = 'nowrap';
+        message.style.pointerEvents = 'none';
+        message.style.zIndex = '10000';
+        message.style.animation = 'summitText 0.8s ease-out forwards';
+        document.body.appendChild(message);
+        setTimeout(() => message.remove(), 800);
+        
+        // 4. Vibration spéciale (succès)
+        try { navigator.vibrate([50, 100, 50]); } catch(e) {}
+        
+        // === RÉCOMPENSE ===
         const baseReward = 800 + Math.floor(getPS() * 15);
         const perfectBonus = stoneCurrentStreak >= 30 ? 500 : 0;
         const reward = baseReward + perfectBonus;
@@ -3440,10 +3491,11 @@ function endStoneGame(success) {
         }
         
         showBanner(`🪨 Pierre flottante ! +${fmt(reward)} sagesse !`);
-        createParticles(window.innerWidth/2, window.innerHeight/2, 40, '#ffd700');
+        createParticles(window.innerWidth/2, window.innerHeight/2, 50, '#ffd700');
         try { navigator.vibrate([100, 50, 100, 50, 200]); } catch(e) {}
         
     } else {
+        // === ÉCHEC ===
         const statusDiv = document.getElementById('stoneStatus');
         if(statusDiv) {
             statusDiv.innerHTML = '💧 La pierre retombe dans l\'eau... Réessayez pour la faire flotter plus haut ! 💧';
@@ -3451,6 +3503,7 @@ function endStoneGame(success) {
         }
     }
     
+    // Réinitialisation après 3 secondes
     setTimeout(() => {
         if(!stoneGameActive) {
             const statusDiv = document.getElementById('stoneStatus');
@@ -3461,11 +3514,15 @@ function endStoneGame(success) {
             stoneCurrentStreak = 0;
             updateStoneUI();
             const stone = document.getElementById('floatingStone');
-            if(stone) stone.style.bottom = '20px';
+            if(stone) {
+                stone.style.bottom = '20px';
+                stone.style.left = '50%';
+                stone.style.transform = 'translateX(-50%)';
+            }
         }
     }, 3000);
-}
-
+        }
+    
 // Attacher les événements pour la pierre
 document.addEventListener('DOMContentLoaded', () => {
     const stone = document.getElementById('floatingStone');
