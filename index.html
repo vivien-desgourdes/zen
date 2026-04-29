@@ -452,6 +452,32 @@
     .journal-stats-row { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
     .journal-stat { font-size: 0.52rem; background: rgba(255,255,255,0.05); padding: 2px 8px; border-radius: 20px; opacity: 0.7; }
 
+    /* COFFRES */
+    /* CHEST SYSTEM */
+.chest-slot{background:rgba(0,0,0,0.4);border-radius:16px;padding:12px;margin-bottom:12px;border:1px solid rgba(212,175,55,0.2);transition:all 0.2s;}
+.chest-slot.unlockable{border-color:var(--gold);animation:chestGlow 1.5s infinite alternate;cursor:pointer;}
+.chest-slot.waiting{opacity:0.6;}
+.chest-slot.empty{opacity:0.4;cursor:pointer;}
+.chest-slot.empty:hover{opacity:0.7;border-color:rgba(212,175,55,0.4);}
+@keyframes chestGlow{from{box-shadow:0 0 5px rgba(212,175,55,0.2);}to{box-shadow:0 0 15px rgba(212,175,55,0.6);}}
+.chest-header{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
+.chest-emoji{font-size:2.5rem;}
+.chest-info{flex:1;}
+.chest-name{font-weight:700;font-size:0.9rem;color:var(--gold);}
+.chest-desc{font-size:0.6rem;opacity:0.6;margin-top:2px;}
+.chest-progress{width:100%;height:6px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;margin:8px 0;}
+.chest-progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--jade2));width:0%;transition:width 1s linear;}
+.chest-timer{font-size:0.6rem;color:var(--jade2);text-align:right;font-family:monospace;letter-spacing:1px;}
+.chest-rewards{font-size:0.55rem;opacity:0.5;margin-top:6px;display:flex;gap:12px;}
+.chest-select{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;justify-content:center;}
+.chest-select-btn{background:rgba(212,175,55,0.1);border:1px solid rgba(212,175,55,0.3);border-radius:12px;padding:8px 12px;cursor:pointer;transition:all 0.1s;display:flex;flex-direction:column;align-items:center;min-width:70px;}
+.chest-select-btn:active{transform:scale(0.95);}
+.chest-select-btn.disabled{opacity:0.4;cursor:not-allowed;}
+.chest-select-emoji{font-size:1.6rem;}
+.chest-select-name{font-size:0.6rem;font-weight:700;margin-top:4px;}
+.chest-select-time{font-size:0.5rem;opacity:0.5;}
+.chest-select-cost{font-size:0.45rem;margin-top:2px;}
+.notif-badge{position:absolute;top:-5px;right:-8px;background:#ff4444;color:white;font-size:0.55rem;padding:2px 5px;border-radius:10px;font-weight:bold;}
   </style>
 </head>
 <body class="world-japan">
@@ -557,13 +583,14 @@
   <!-- NAV FIXE -->
   <div class="nav-bar-fixed">
     <nav class="nav-bar">
-      <div class="nav-btn active" id="nav-shop" onclick="openPanel('shop',this)"><span>⛩️</span>TEMPLE</div>
-      <div class="nav-btn" id="nav-pets" onclick="openPanel('pets',this)"><span>🐉</span>ESPRITS</div>
-      <div class="nav-btn" id="nav-talents" onclick="openPanel('talents',this)"><span>🌿</span>TALENTS</div>
-      <div class="nav-btn" id="nav-missions" onclick="openPanel('missions',this)"><span>📜</span>SUTRAS</div>
-      <div class="nav-btn" id="nav-enso" onclick="openPanel('enso',this)"><span>🎋</span>ENSO</div>
-      <div class="nav-btn" id="nav-worlds" onclick="openPanel('worlds',this)"><span>🌍</span>MONDES</div>
-      <div class="nav-btn" id="nav-stats" onclick="openPanel('stats',this)"><span>🧘</span>ZEN</div>
+  <div class="nav-btn active" id="nav-shop" onclick="openPanel('shop',this)"><span>⛩️</span>TEMPLE</div>
+  <div class="nav-btn" id="nav-pets" onclick="openPanel('pets',this)"><span>🐉</span>ESPRITS</div>
+  <div class="nav-btn" id="nav-talents" onclick="openPanel('talents',this)"><span>🌿</span>TALENTS</div>
+  <div class="nav-btn" id="nav-missions" onclick="openPanel('missions',this)"><span>📜</span>SUTRAS</div>
+  <div class="nav-btn" id="nav-enso" onclick="openPanel('enso',this)"><span>🎋</span>ENSO</div>
+  <div class="nav-btn" id="nav-worlds" onclick="openPanel('worlds',this)"><span>🌍</span>MONDES</div>
+  <div class="nav-btn" id="nav-chests" onclick="openPanel('chests',this)"><span>🎁</span>COFFRES</div>
+  <div class="nav-btn" id="nav-stats" onclick="openPanel('stats',this)"><span>🧘</span>ZEN</div>
     </nav>
   </div>
 
@@ -632,6 +659,11 @@
     <div id="worlds-content" style="flex:1;overflow-y:auto;min-height:0;padding-bottom:30px;"></div>
   </div>
 
+  <div id="panel-chests" class="panel" style="display:flex;flex-direction:column;">
+  <div class="panel-header" style="flex-shrink:0;"><div class="panel-title">🎁 Coffres Sacrés</div><button class="panel-close" onclick="closePanels()">✕</button></div>
+  <div style="font-size:0.65rem;opacity:0.6;margin-bottom:10px;padding:0 4px;flex-shrink:0;">Les coffres s'ouvrent avec le temps. Revenez plus tard pour les débloquer !</div>
+  <div id="chests-content" style="flex:1;overflow-y:auto;min-height:0;padding-bottom:30px;"></div>
+  </div>
   <div id="panel-stats" class="panel">
     <div class="panel-header"><div class="panel-title">🧘 Méditation</div><button class="panel-close" onclick="closePanels()">✕</button></div>
     <div class="panel-scroll" id="stats-area"></div>
@@ -1488,6 +1520,12 @@ const ACHIEVEMENTS = [
   { id:'ach_golden_10',    title:'Collecteur Céleste',     desc:'10 esprits dorés',        emoji:'🌟', condition:(s)=>s.goldenCaptured>=10,      reward:100000 },
 ];
 
+    const CHEST_TYPES = {
+  wood:     { name: '🪵 Coffre en Bois',   emoji: '🪵', duration: 3600000,  rarityMult: 1.0, jadeMin: 1, jadeMax: 2, spirits: 1, color: '#b88746', cost: 500 },
+  silver:   { name: '🥈 Coffre Argenté',  emoji: '🥈', duration: 14400000, rarityMult: 1.5, jadeMin: 2, jadeMax: 5, spirits: 2, color: '#c0c0c0', cost: 2500 },
+  gold:     { name: '🏆 Coffre Doré',    emoji: '🏆', duration: 43200000, rarityMult: 2.5, jadeMin: 5, jadeMax: 15, spirits: 3, color: '#ffd700', cost: 15000 },
+  legendary:{ name: '✨ Coffre Légendaire', emoji: '✨', duration: 86400000, rarityMult: 5.0, jadeMin: 15, jadeMax: 40, spirits: 5, color: '#cc88ff', cost: 100000 }
+};
 // ==================== STATE ====================
 let state = {
   score:0, totalClicks:0, allTimeScore:0,
@@ -2660,6 +2698,125 @@ setInterval(()=>{
   updateUI();
 },100);
 
+function initChests() { updateChestTimers(); }
+
+function updateChestTimers() {
+  const now = Date.now();
+  let any = false;
+  for(let i=0; i<state.chestSlots.length; i++){
+    const s = state.chestSlots[i];
+    if(s.status === 'opening' && s.endTime <= now){ s.status = 'unlocked'; any = true; }
+  }
+  if(any){ updateChestNotification(); renderChests(); }
+}
+
+function canAddChest(){ return state.chestSlots.some(s => s.status === 'empty'); }
+
+function addChest(type){
+  if(!canAddChest()){ showBanner("❌ Pas de place !"); return false; }
+  const chest = CHEST_TYPES[type];
+  if(!chest) return false;
+  if(state.score < chest.cost){ showBanner(`❌ Pas assez de sagesse ! ${fmt(chest.cost)} requis.`); return false; }
+  state.score -= chest.cost;
+  const emptyIndex = state.chestSlots.findIndex(s => s.status === 'empty');
+  if(emptyIndex === -1) return false;
+  state.chestSlots[emptyIndex] = { type: type, endTime: Date.now() + chest.duration, status: 'opening' };
+  renderChests(); saveGame(); showBanner(`🎁 ${chest.emoji} ${chest.name} ajouté !`); updateUI();
+  return true;
+}
+
+function openChest(idx){
+  const slot = state.chestSlots[idx];
+  if(!slot || slot.status !== 'unlocked') return;
+  const chest = CHEST_TYPES[slot.type];
+  const jadeGain = Math.floor(Math.random() * (chest.jadeMax - chest.jadeMin + 1) + chest.jadeMin);
+  const spirits = [];
+  for(let i=0; i<chest.spirits; i++){
+    let spirit = rollOneWithRarityBoost(chest.rarityMult);
+    spirits.push(spirit);
+    addSpiritXP(spirit.name, 5 + Math.floor(spirit.mult * 2));
+    state.pets.push({...spirit});
+    if(!state.discoveredSkins.includes(spirit.name)) state.discoveredSkins.push(spirit.name);
+  }
+  state.jadeRelics += jadeGain;
+  state.score += jadeGain * 10;
+  showBanner(`🎁 ${chest.emoji} ${chest.name} ! +${jadeGain}💎 · ${spirits.map(s=>s.emoji).join('')}`);
+  createParticles(window.innerWidth/2, window.innerHeight/2, 30, chest.color);
+  state.chestSlots[idx] = { type: null, endTime: 0, status: 'empty' };
+  const nonEmpty = state.chestSlots.filter(s => s.status !== 'empty');
+  state.chestSlots = [...nonEmpty, ...Array(3 - nonEmpty.length).fill({ type: null, endTime: 0, status: 'empty' })];
+  renderChests(); updateUI(); saveGame(); vibrateEvo();
+}
+
+function rollOneWithRarityBoost(boost){
+  let pool = [...SPIRIT_RARITIES];
+  pool = pool.map(r => ({...r, chance: r.chance * (r.mult >= 2.5 ? boost : 1)}));
+  const total = pool.reduce((s,r) => s + r.chance, 0);
+  pool.forEach(r => r.chance /= total);
+  let r = Math.random(), acc = 0;
+  for(const p of pool){ acc += p.chance; if(r <= acc) return p; }
+  return pool[0];
+}
+
+function formatChestTime(ms){
+  const h = Math.floor(ms / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  if(h > 0) return `${h}h${m > 0 ? ` ${m}m` : ''}`;
+  return `${m}m`;
+}
+
+function updateChestNotification(){
+  const hasUnlocked = state.chestSlots.some(s => s.status === 'unlocked');
+  const navBtn = document.getElementById('nav-chests');
+  if(!navBtn) return;
+  const oldBadge = navBtn.querySelector('.notif-badge');
+  if(hasUnlocked){
+    if(!oldBadge){ const badge = document.createElement('span'); badge.className = 'notif-badge'; badge.textContent = '🎁'; navBtn.style.position = 'relative'; navBtn.appendChild(badge); }
+  } else { if(oldBadge) oldBadge.remove(); }
+}
+
+function renderChests(){
+  const container = document.getElementById('chests-content');
+  if(!container) return;
+  container.innerHTML = '<div style="font-size:0.7rem;opacity:0.7;margin-bottom:12px;text-align:center;">Ajoutez des coffres (max 3). Ils s\'ouvrent avec le temps.</div>';
+  for(let i=0; i<state.chestSlots.length; i++){
+    const slot = state.chestSlots[i];
+    const div = document.createElement('div'); div.className = 'chest-slot';
+    if(slot.status === 'empty'){
+      div.classList.add('empty');
+      div.innerHTML = `<div class="chest-header"><div class="chest-emoji">🔒</div><div class="chest-info"><div class="chest-name">Slot libre</div><div class="chest-desc">Ajoutez un coffre</div></div></div>`;
+    } else {
+      const chest = CHEST_TYPES[slot.type];
+      const remaining = Math.max(0, slot.endTime - Date.now());
+      let progress = 0, statusText = '', canOpen = false;
+      if(slot.status === 'opening'){
+        progress = ((chest.duration - remaining) / chest.duration) * 100;
+        statusText = formatChestTime(remaining);
+        div.classList.add('waiting');
+      } else if(slot.status === 'unlocked'){
+        progress = 100; statusText = 'PRÊT !'; canOpen = true;
+        div.classList.add('unlockable');
+      }
+      div.innerHTML = `<div class="chest-header"><div class="chest-emoji">${chest.emoji}</div><div class="chest-info"><div class="chest-name">${chest.name}</div><div class="chest-desc">${chest.spirits} esprit(s) · ${chest.jadeMin}-${chest.jadeMax}💎</div></div></div><div class="chest-progress"><div class="chest-progress-fill" style="width:${progress}%;background:linear-gradient(90deg,${chest.color},var(--gold));"></div></div><div class="chest-timer">${statusText}</div><div class="chest-rewards"><span>🎁 +${chest.spirits} esprit(s)</span><span>💎 ${chest.jadeMin}-${chest.jadeMax}</span></div>`;
+      if(canOpen){ div.style.cursor = 'pointer'; div.addEventListener('click', () => openChest(i)); }
+    }
+    container.appendChild(div);
+  }
+  const selector = document.createElement('div'); selector.className = 'chest-select';
+  selector.innerHTML = '<div style="width:100%;text-align:center;font-size:0.6rem;opacity:0.5;margin-bottom:6px;">➕ AJOUTER UN COFFRE</div>';
+  for(const [key, chest] of Object.entries(CHEST_TYPES)){
+    const btn = document.createElement('div'); btn.className = 'chest-select-btn';
+    const can = canAddChest() && state.score >= chest.cost;
+    if(!can) btn.classList.add('disabled');
+    btn.innerHTML = `<span class="chest-select-emoji">${chest.emoji}</span><span class="chest-select-name">${chest.name.split(' ').slice(1).join(' ')}</span><span class="chest-select-time">⏱️ ${formatChestTime(chest.duration)}</span><span class="chest-select-cost" style="color:${state.score>=chest.cost?'var(--jade2)':'#ff6666'}">💰 ${fmt(chest.cost)}</span>`;
+    if(can) btn.addEventListener('click', () => addChest(key));
+    selector.appendChild(btn);
+  }
+  container.appendChild(selector);
+  if(window.chestInterval) clearInterval(window.chestInterval);
+  window.chestInterval = setInterval(() => { if(document.getElementById('panel-chests')?.classList.contains('open')){ updateChestTimers(); renderChests(); } else { updateChestTimers(); } }, 1000);
+    }
+    
 // ==================== INIT ====================
 window.onload=()=>{
   applyDayNight();
@@ -2673,10 +2830,12 @@ window.onload=()=>{
     applyWorldTheme(state.currentWorld);
   }
   initMusic();
+  initChests();
   updateMusicButton();
   updateUI();
   rotateQuote();
   updateWorldIndicator();
+
   setTimeout(spawnGoldenSpirit,30000+Math.random()*60000);
   const starBtn=document.getElementById('star-btn');
   if(starBtn){
