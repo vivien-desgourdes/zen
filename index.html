@@ -2370,7 +2370,7 @@ function clearEnsoCanvas(){
   ensoPoints=[]; ensoDrawing=false;
 }
 
-function evaluateEnso(){
+/*function evaluateEnso(){
   try { navigator.vibrate(30); } catch(e) {}
   if(ensoPoints.length<30){ showBanner("❌ Pas assez de tracé... Tracez un cercle entier !"); return; }
   let cx=0,cy=0;
@@ -2410,8 +2410,118 @@ function evaluateEnso(){
   } else { showBanner(`🍃 ${message} +${fmt(reward)} sagesse`); }
   document.getElementById('enso-score-display').innerHTML=`Dernier score : ${score}/100 — ${message}`;
   clearEnsoCanvas(); updateUI(); saveGame();
-}
+}*/
 
+function evaluateEnso(){
+  try { navigator.vibrate(30); } catch(e) {}
+  if(ensoPoints.length < 50){ 
+    showBanner("❌ Pas assez de tracé... Tracez un cercle entier !"); 
+    return; 
+  }
+  
+  // 1. Calcul du centre
+  let cx=0, cy=0;
+  for(const p of ensoPoints){ cx+=p.x; cy+=p.y; }
+  cx/=ensoPoints.length; cy/=ensoPoints.length;
+  
+  // 2. Rayon moyen et variance
+  let distances = [];
+  for(const p of ensoPoints){ 
+    const dx=p.x-cx, dy=p.y-cy; 
+    distances.push(Math.sqrt(dx*dx+dy*dy)); 
+  }
+  const avgDist = distances.reduce((a,b)=>a+b,0)/distances.length;
+  let variance = 0;
+  for(const d of distances) variance += Math.pow(d-avgDist, 2);
+  variance /= distances.length;
+  
+  // 3. NOUVEAU : Coefficient de circularité (plus strict)
+  let regularity = Math.max(0, Math.min(1, 1 - (variance / (avgDist * avgDist))));
+  regularity = Math.pow(regularity, 1.5); // Pénalise plus les défauts
+  
+  // 4. Complétude du tour
+  let totalDistance = 0;
+  for(let i=1;i<ensoPoints.length;i++){
+    const dx=ensoPoints[i].x-ensoPoints[i-1].x, dy=ensoPoints[i].y-ensoPoints[i-1].y;
+    totalDistance += Math.sqrt(dx*dx+dy*dy);
+  }
+  const circumference = 2 * Math.PI * avgDist;
+  let completeness = Math.min(1, totalDistance / circumference);
+  completeness = Math.pow(completeness, 1.2); // Nécessite de presque finir le tour
+  
+  // 5. NOUVEAU : Pénalité pour les angles trop brusques (changements de direction)
+  let smoothness = 1;
+  if(ensoPoints.length > 3){
+    let totalAngleChange = 0;
+    for(let i=2; i<ensoPoints.length; i++){
+      const p1 = ensoPoints[i-2], p2 = ensoPoints[i-1], p3 = ensoPoints[i];
+      const angle = Math.atan2(p2.y-p1.y, p2.x-p1.x) - Math.atan2(p3.y-p2.y, p3.x-p2.x);
+      totalAngleChange += Math.min(Math.abs(angle), Math.PI);
+    }
+    const maxAngleChange = (ensoPoints.length - 2) * Math.PI / 4; // Max 45° par segment
+    smoothness = Math.max(0, Math.min(1, 1 - (totalAngleChange / maxAngleChange)));
+    smoothness = Math.pow(smoothness, 1.5);
+  }
+  
+  // 6. NOUVEAU : Début et fin proches (pour fermer le cercle)
+  let closure = 0;
+  if(ensoPoints.length > 10){
+    const first = ensoPoints[0];
+    const last = ensoPoints[ensoPoints.length-1];
+    const distance = Math.sqrt(Math.pow(last.x-first.x,2) + Math.pow(last.y-first.y,2));
+    closure = Math.max(0, 1 - (distance / (avgDist * 0.3)));
+  }
+  
+  // 7. Calcul du score final (plus strict)
+  let score = Math.floor((
+    regularity * 0.35 +
+    completeness * 0.25 +
+    smoothness * 0.25 +
+    closure * 0.15
+  ) * 100);
+  
+  score = Math.min(100, Math.max(0, score));
+  
+  // 8. Seuils plus élevés pour le parfait
+  const ensoEventMult = getEventBonus('ensoMult') || 1;
+  const baseReward = Math.floor(getPS() * 15 + 500);
+  let multiplier = 1, message = '';
+  
+  if(score >= 95){ 
+    multiplier = 4; 
+    message = '🌟 PARFAIT ! L\'Enso est pur !'; 
+    createParticles(ensoCanvas.getBoundingClientRect().left+110, ensoCanvas.getBoundingClientRect().top+110, 40, '#ffd700');
+  } else if(score >= 80){ 
+    multiplier = 2.5; 
+    message = '✨ Très bel Enso !'; 
+  } else if(score >= 60){ 
+    multiplier = 1.5; 
+    message = '🍃 Beau début...'; 
+  } else { 
+    multiplier = 1; 
+    message = '🪨 Continue de tracer...'; 
+  }
+  
+  const reward = Math.floor(baseReward * multiplier * ensoEventMult);
+  state.score += reward;
+  state.allTimeScore += reward;
+  
+  if(score >= 95){
+    state.ensoPerfectCount++;
+    state.ensoBonusEndTime = Date.now() + 120000;
+    showBanner(`🎋 Enso parfait ! +25% sagesse 2 min ! +${fmt(reward)} sagesse`);
+    showPerfectEnsoAnimation();
+    try { navigator.vibrate([50,30,50]); } catch(e) {}
+  } else { 
+    showBanner(`🍃 ${message} +${fmt(reward)} sagesse`); 
+  }
+  
+  document.getElementById('enso-score-display').innerHTML = `Dernier score : ${score}/100 — ${message}`;
+  clearEnsoCanvas();
+  updateUI();
+  saveGame();
+}
+    /*fin d'évaluation enso*/
 function showPerfectEnsoAnimation(){
   const overlay=document.createElement('div'); overlay.className='enso-perfect-overlay';
   const circle=document.createElement('div'); circle.className='enso-perfect-circle';
