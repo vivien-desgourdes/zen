@@ -516,6 +516,22 @@
     animation: splash 0.3s ease-out forwards;
     pointer-events: none;
 }
+    /* Animation d'éclat au sommet */
+@keyframes summitGlow {
+    0% { transform: scale(0.5); opacity: 0.8; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+@keyframes summitText {
+    0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+    100% { transform: translateX(-50%) translateY(-40px); opacity: 0; }
+}
+
+/* Éclat supplémentaire */
+@keyframes goldenFlash {
+    0% { background: radial-gradient(circle, rgba(255,215,0,0.8), transparent); }
+    100% { background: radial-gradient(circle, rgba(255,215,0,0), transparent); }
+}
   </style>
 </head>
 <body class="world-japan">
@@ -3207,11 +3223,76 @@ function updateStoneHeight() {
     const heightPercent = Math.min(1, stoneCurrentStreak / 30);
     const newBottom = 20 + (heightPercent * stoneMaxHeight);
     stone.style.bottom = newBottom + 'px';
-    // Conserver le centrage
     stone.style.left = '50%';
     stone.style.transform = 'translateX(-50%)';
+    
+    // === NOUVEAU : Effet quand la pierre touche le sommet ===
+    if(stoneCurrentStreak >= 30) {
+        // Effet visuel sur la pierre
+        stone.style.filter = 'drop-shadow(0 0 20px gold) brightness(1.3)';
+        stone.style.transition = 'filter 0.1s ease';
+        
+        // Créer un effet d'éclat
+        createSummitEffect(stone);
+        
+        // Animation spéciale
+        stone.style.transform = 'translateX(-50%) scale(1.3)';
+        setTimeout(() => {
+            if(stone) stone.style.transform = 'translateX(-50%) scale(1)';
+        }, 150);
+    } else {
+        stone.style.filter = 'drop-shadow(0 0 8px rgba(212,175,55,0.3))';
+    }
 }
-
+function createSummitEffect(stone) {
+    if(!stone) return;
+    const rect = stone.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    
+    // 1. Pluie de particules dorées
+    for(let i = 0; i < 30; i++) {
+        setTimeout(() => {
+            createParticles(centerX, centerY, 1, '#ffd700');
+        }, i * 30);
+    }
+    
+    // 2. Effet de rayonnement lumineux
+    const glow = document.createElement('div');
+    glow.style.position = 'fixed';
+    glow.style.left = (centerX - 50) + 'px';
+    glow.style.top = (centerY - 50) + 'px';
+    glow.style.width = '100px';
+    glow.style.height = '100px';
+    glow.style.borderRadius = '50%';
+    glow.style.background = 'radial-gradient(circle, rgba(255,215,0,0.6), transparent)';
+    glow.style.pointerEvents = 'none';
+    glow.style.zIndex = '9999';
+    glow.style.animation = 'summitGlow 0.5s ease-out forwards';
+    document.body.appendChild(glow);
+    setTimeout(() => glow.remove(), 500);
+    
+    // 3. Son (vibration spéciale)
+    try { navigator.vibrate([50, 100, 50]); } catch(e) {}
+    
+    // 4. Message éphémère
+    const message = document.createElement('div');
+    message.textContent = '✨ SOMMET ATTEINT ! ✨';
+    message.style.position = 'fixed';
+    message.style.left = centerX + 'px';
+    message.style.top = (centerY - 60) + 'px';
+    message.style.transform = 'translateX(-50%)';
+    message.style.color = '#ffd700';
+    message.style.fontSize = '0.8rem';
+    message.style.fontWeight = 'bold';
+    message.style.textShadow = '0 0 10px gold';
+    message.style.whiteSpace = 'nowrap';
+    message.style.pointerEvents = 'none';
+    message.style.zIndex = '10000';
+    message.style.animation = 'summitText 0.8s ease-out forwards';
+    document.body.appendChild(message);
+    setTimeout(() => message.remove(), 800);
+}
 function tapStone(event) {
     if(!stoneGameActive) return;
     
