@@ -2410,7 +2410,7 @@ function clearEnsoCanvas(){
   } else { showBanner(`🍃 ${message} +${fmt(reward)} sagesse`); }
   document.getElementById('enso-score-display').innerHTML=`Dernier score : ${score}/100 — ${message}`;
   clearEnsoCanvas(); updateUI(); saveGame();
-}*/
+}
 
 function evaluateEnso(){
   try { navigator.vibrate(30); } catch(e) {}
@@ -2520,8 +2520,160 @@ function evaluateEnso(){
   clearEnsoCanvas();
   updateUI();
   saveGame();
+}*/
+function evaluateEnso(){
+  try { navigator.vibrate(30); } catch(e) {}
+  
+  // 1. Vérification du nombre de points (minimum 100 pour un vrai cercle)
+  if(ensoPoints.length < 100){ 
+    showBanner("❌ Tracez plus lentement pour faire un vrai cercle ! (" + ensoPoints.length + "/100 points)"); 
+    return; 
+  }
+  
+  // 2. Calcul du centre (médiane pour éviter les outliers)
+  let xs = ensoPoints.map(p => p.x).sort((a,b)=>a-b);
+  let ys = ensoPoints.map(p => p.y).sort((a,b)=>a-b);
+  let cx = xs[Math.floor(xs.length/2)];
+  let cy = ys[Math.floor(ys.length/2)];
+  
+  // 3. Rayons et détection des écarts
+  let distances = [];
+  for(const p of ensoPoints){ 
+    const dx = p.x - cx, dy = p.y - cy; 
+    distances.push(Math.sqrt(dx*dx+dy*dy)); 
+  }
+  distances.sort((a,b)=>a-b);
+  
+  // Rayon médian (plus robuste que la moyenne)
+  const medianDist = distances[Math.floor(distances.length/2)];
+  
+  // 4. Variance absolue (écart type / rayon médian)
+  let sumSqDiff = 0;
+  for(const d of distances) sumSqDiff += Math.pow(d - medianDist, 2);
+  const stdDev = Math.sqrt(sumSqDiff / distances.length);
+  const cv = stdDev / medianDist; // Coefficient de variation
+  let regularity = Math.max(0, Math.min(1, 1 - (cv * 2))); // Pénalité forte
+  
+  // 5. Complétude (doit être presque parfaite)
+  let totalDistance = 0;
+  for(let i=1;i<ensoPoints.length;i++){
+    const dx = ensoPoints[i].x - ensoPoints[i-1].x;
+    const dy = ensoPoints[i].y - ensoPoints[i-1].y;
+    totalDistance += Math.sqrt(dx*dx+dy*dy);
+  }
+  const circumference = 2 * Math.PI * medianDist;
+  let completeness = Math.min(1, totalDistance / circumference);
+  completeness = Math.pow(completeness, 3); // TRÈS pénalisant
+  
+  // 6. Smoothness (uniformité de la vitesse et direction)
+  let speedVariation = 0;
+  let angleVariation = 0;
+  let prevSpeed = 0;
+  let prevAngle = 0;
+  
+  for(let i=2; i<ensoPoints.length; i++){
+    const dx1 = ensoPoints[i-1].x - ensoPoints[i-2].x;
+    const dy1 = ensoPoints[i-1].y - ensoPoints[i-2].y;
+    const dx2 = ensoPoints[i].x - ensoPoints[i-1].x;
+    const dy2 = ensoPoints[i].y - ensoPoints[i-1].y;
+    
+    const speed1 = Math.sqrt(dx1*dx1 + dy1*dy1);
+    const speed2 = Math.sqrt(dx2*dx2 + dy2*dy2);
+    if(prevSpeed > 0) speedVariation += Math.abs(speed2 - prevSpeed);
+    prevSpeed = speed2;
+    
+    const angle1 = Math.atan2(dy1, dx1);
+    const angle2 = Math.atan2(dy2, dx2);
+    let angleDiff = Math.abs(angle2 - angle1);
+    if(angleDiff > Math.PI) angleDiff = 2*Math.PI - angleDiff;
+    if(i>2) angleVariation += angleDiff;
+    prevAngle = angle2;
+  }
+  
+  const maxSpeedVar = totalDistance / 2;
+  const maxAngleVar = (ensoPoints.length - 2) * Math.PI / 8;
+  let smoothness = Math.max(0, 1 - (speedVariation / maxSpeedVar) * 2);
+  smoothness = (smoothness + Math.max(0, 1 - (angleVariation / maxAngleVar))) / 2;
+  
+  // 7. Fermeture (début et fin doivent être très proches)
+  let closure = 0;
+  if(ensoPoints.length > 20){
+    const first = ensoPoints[0];
+    const last = ensoPoints[ensoPoints.length-1];
+    const distance = Math.sqrt(Math.pow(last.x-first.x,2) + Math.pow(last.y-first.y,2));
+    closure = Math.max(0, 1 - (distance / (medianDist * 0.15)));
+    closure = Math.pow(closure, 2);
+  }
+  
+  // 8. Nouveau critère : concentricité (centre doit rester stable)
+  let centerShift = 0;
+  let windowSize = Math.floor(ensoPoints.length / 10);
+  for(let i=0; i<ensoPoints.length - windowSize; i+=windowSize){
+    let windowPoints = ensoPoints.slice(i, i+windowSize);
+    let wx = windowPoints.reduce((s,p)=>s+p.x,0)/windowPoints.length;
+    let wy = windowPoints.reduce((s,p)=>s+p.y,0)/windowPoints.length;
+    centerShift += Math.sqrt(Math.pow(wx-cx,2) + Math.pow(wy-cy,2));
+  }
+  centerShift /= (ensoPoints.length / windowSize);
+  let concentricity = Math.max(0, 1 - (centerShift / (medianDist * 0.2)));
+  
+  // 9. Score final (beaucoup plus strict)
+  let score = Math.floor((
+    regularity * 0.30 +
+    completeness * 0.30 +
+    smoothness * 0.20 +
+    closure * 0.10 +
+    concentricity * 0.10
+  ) * 100);
+  
+  score = Math.min(100, Math.max(0, score));
+  
+  // 10. Seuil pour parfait : 98+
+  const ensoEventMult = getEventBonus('ensoMult') || 1;
+  const baseReward = Math.floor(getPS() * 25 + 1000);
+  let multiplier = 1, message = '';
+  
+  if(score >= 98){ 
+    multiplier = 5; 
+    message = '🏆 PARFAIT ! Un Enso d\'une pureté divine !'; 
+    createParticles(ensoCanvas.getBoundingClientRect().left+110, ensoCanvas.getBoundingClientRect().top+110, 50, '#ffffff');
+    try { navigator.vibrate([100,50,100,50,200]); } catch(e) {}
+  } else if(score >= 90){ 
+    multiplier = 3; 
+    message = '✨ Excellent ! Presque parfait...'; 
+  } else if(score >= 75){ 
+    multiplier = 2; 
+    message = '🍃 Très bel Enso !'; 
+  } else if(score >= 55){ 
+    multiplier = 1.5; 
+    message = '🌱 Continue, tu progresses !'; 
+  } else { 
+    multiplier = 1; 
+    message = '🪨 Concentre-toi sur un cercle régulier...'; 
+  }
+  
+  const reward = Math.floor(baseReward * multiplier * ensoEventMult);
+  state.score += reward;
+  state.allTimeScore += reward;
+  
+  if(score >= 98){
+    state.ensoPerfectCount++;
+    state.ensoBonusEndTime = Date.now() + 180000; // 3 minutes
+    showBanner(`🎋 ENSŌ PARFAIT ! +30% sagesse 3 min ! +${fmt(reward)} sagesse`);
+    showPerfectEnsoAnimation();
+  } else { 
+    showBanner(`🍃 ${message} +${fmt(reward)} sagesse`); 
+  }
+  
+  // Afficher le détail des critères pour aider l'utilisateur
+  document.getElementById('enso-score-display').innerHTML = `Dernier score : ${score}/100 — ${message}<br>
+  <span style="font-size:0.6rem;opacity:0.6;">R:${Math.floor(regularity*100)}% | C:${Math.floor(completeness*100)}% | L:${Math.floor(smoothness*100)}% | F:${Math.floor(closure*100)}%</span>`;
+  
+  clearEnsoCanvas();
+  updateUI();
+  saveGame();
 }
-    /*fin d'évaluation enso*/
+    
 function showPerfectEnsoAnimation(){
   const overlay=document.createElement('div'); overlay.className='enso-perfect-overlay';
   const circle=document.createElement('div'); circle.className='enso-perfect-circle';
