@@ -2482,7 +2482,7 @@ function clearEnsoCanvas(){
   document.getElementById('enso-score-display').innerHTML=`Dernier score : ${score}/100 — ${message}`;
   clearEnsoCanvas(); updateUI(); saveGame();
 }
-
+*/
 function evaluateEnso(){
   try { navigator.vibrate(30); } catch(e) {}
   if(ensoPoints.length < 50){ 
@@ -2591,9 +2591,9 @@ function evaluateEnso(){
   clearEnsoCanvas();
   updateUI();
   saveGame();
-}*/
+}
 
-  function evaluateEnso(){
+/*  function evaluateEnso(){
   try { navigator.vibrate(30); } catch(e) {}
   
   // Seulement 40 points minimum (très accessible)
@@ -2720,7 +2720,7 @@ function evaluateEnso(){
   updateUI();
   saveGame();
 }
-
+*/
     
 function showPerfectEnsoAnimation(){
   const overlay=document.createElement('div'); overlay.className='enso-perfect-overlay';
