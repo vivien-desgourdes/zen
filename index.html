@@ -2367,7 +2367,7 @@ function setPetTab(tab){
   renderPets();
 }
 
-function rollOne(){
+/*function rollOne(){
   state.pityCounter++;
   const pityMax = 50-Math.floor(getTalentEffect('pityReduce'));
 
@@ -2403,8 +2403,49 @@ function rollOne(){
   state.pets.push({...sel});
   if(!state.discoveredSkins.includes(sel.name)) state.discoveredSkins.push(sel.name);
   return sel;
+}*/
+function rollOne(){
+  state.pityCounter++;
+  const pityMax = 50-Math.floor(getTalentEffect('pityReduce'));
+
+  let pool = [...SPIRIT_RARITIES];
+  const ev = getActiveEvent();
+  const world = getCurrentWorld();
+  const exclusives = [
+    ...(ev?.exclusiveSpirits || []),
+    ...(world?.exclusiveSpirits || [])
+  ];
+  
+  // Filtrer les exclusifs déjà possédés
+  const ownedExclusiveNames = new Set(state.pets.map(p => p.name));
+  const availableExclusives = exclusives.filter(es => !ownedExclusiveNames.has(es.name));
+  
+  if(availableExclusives.length){
+    const chanceEach = 0.025;
+    pool = pool.map(r=>({...r, chance: r.chance*(1 - chanceEach*availableExclusives.length)}));
+    availableExclusives.forEach(es=> pool.push({...es, chance: chanceEach}));
+    const total = pool.reduce((s,r)=>s+r.chance,0);
+    pool.forEach(r=>r.chance/=total);
+  }
+
+  let sel = pool[0];
+  const isGuaranteed = state.pityCounter >= pityMax;
+  if(isGuaranteed){
+    sel = SPIRIT_RARITIES[25] || pool[Math.floor(Math.random()*pool.length)];
+    state.pityCounter = 0;
+  } else {
+    let r = Math.random(), acc = 0;
+    for(const p of pool){ acc+=p.chance; if(r<=acc){sel=p;break;} }
+    if(SPIRIT_RARITIES.findIndex(s=>s.name===sel.name) >= 25) state.pityCounter = 0;
+  }
+
+  addSpiritXP(sel.name, 10+Math.floor(sel.mult*2));
+  state.pets.push({...sel});
+  if(!state.discoveredSkins.includes(sel.name)) state.discoveredSkins.push(sel.name);
+  return sel;
 }
 
+    
 function summonPet(){
   const cost=summonCost(); if(state.score<cost) return;
   state.score-=cost;
@@ -2465,7 +2506,7 @@ function showRarityReveal(sel){
   if(el){el.classList.remove('show');void el.offsetWidth;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 }
 
-function tryFuse(rarityName){
+/*function tryFuse(rarityName){
   const idx=SPIRIT_RARITIES.findIndex(r=>r.name===rarityName);
   if(idx<0||idx>=SPIRIT_RARITIES.length-1) return;
   const required=fusionRequired();
@@ -2487,9 +2528,57 @@ function tryFuse(rarityName){
   vibrateFusion();
   showLorePopup(next);
   renderPets(); updateUI(); saveGame();
-}
+}*/
 
-function renderPets(){
+function tryFuse(spiritName){
+  // Vérifier si c'est un esprit exclusif
+  const exclusiveNames = new Set();
+  SEASONAL_EVENTS.forEach(ev => {
+    if(ev.exclusiveSpirits) ev.exclusiveSpirits.forEach(s => exclusiveNames.add(s.name));
+  });
+  WORLDS.forEach(w => {
+    if(w.exclusiveSpirits) w.exclusiveSpirits.forEach(s => exclusiveNames.add(s.name));
+  });
+  
+  const isExclusive = exclusiveNames.has(spiritName);
+  if(isExclusive){
+    showBanner(`✨ ${spiritName} est unique et ne peut pas être fusionné !`);
+    return;
+  }
+  
+  const idx = SPIRIT_RARITIES.findIndex(r => r.name === spiritName);
+  if(idx < 0 || idx >= SPIRIT_RARITIES.length - 1) return;
+  
+  const required = fusionRequired();
+  const count = state.pets.filter(p => p.name === spiritName).length;
+  if(count < required) return;
+  
+  let removed = 0;
+  state.pets = state.pets.filter(p => { 
+    if(p.name === spiritName && removed < required){ removed++; return false; } 
+    return true; 
+  });
+  
+  const next = SPIRIT_RARITIES[idx + 1];
+  state.pets.push({...next});
+  if(!state.discoveredSkins.includes(next.name)) state.discoveredSkins.push(next.name);
+  addSpiritXP(next.name, 50);
+  
+  const fe = document.getElementById('fuse-emoji');
+  const fn = document.getElementById('fuse-name');
+  const fb = document.getElementById('fuse-bonus');
+  if(fe) fe.textContent = next.emoji;
+  if(fn) fn.textContent = next.name;
+  if(fb) fb.textContent = `×${next.mult} sagesse`;
+  const fl = document.getElementById('fuse-flash');
+  if(fl){ fl.classList.remove('show'); void fl.offsetWidth; fl.classList.add('show'); setTimeout(()=>fl.classList.remove('show'),2200); }
+  createParticles(window.innerWidth/2, window.innerHeight/2, 16, next.color || '#cc88ff');
+  vibrateFusion();
+  showLorePopup(next);
+  renderPets(); updateUI(); saveGame();
+}
+    
+/*function renderPets(){
   const c=document.getElementById('pets-tab-content'); if(!c) return;
   if(currentPetTab==='journal'){ renderJournal(c); return; }
   if(currentPetTab==='evolution'){ renderEvolution(c); return; }
@@ -2529,8 +2618,76 @@ function renderPets(){
     card.querySelector('.fuse-btn').addEventListener('click',()=>tryFuse(p.name));
     c.appendChild(card);
   });
-}
+}*/
 
+function renderPets(){
+  const c = document.getElementById('pets-tab-content'); if(!c) return;
+  if(currentPetTab === 'journal'){ renderJournal(c); return; }
+  if(currentPetTab === 'evolution'){ renderEvolution(c); return; }
+  c.style.display = ''; c.style.flexDirection = ''; c.style.gap = '';
+  c.innerHTML = '';
+  
+  if(!state.pets.length){ 
+    c.innerHTML = '<div style="opacity:0.4;text-align:center;padding:20px;grid-column:span 2;">Aucun esprit invoqué.</div>'; 
+    return; 
+  }
+  
+  // Récupérer tous les noms d'exclusifs
+  const exclusiveNames = new Set();
+  SEASONAL_EVENTS.forEach(ev => {
+    if(ev.exclusiveSpirits) ev.exclusiveSpirits.forEach(s => exclusiveNames.add(s.name));
+  });
+  WORLDS.forEach(w => {
+    if(w.exclusiveSpirits) w.exclusiveSpirits.forEach(s => exclusiveNames.add(s.name));
+  });
+  
+  const counts = {};
+  state.pets.forEach(p => { 
+    if(!counts[p.name]) counts[p.name] = {...p, n: 0}; 
+    counts[p.name].n++; 
+  });
+  
+  Object.values(counts).forEach(p => {
+    const isExclusive = exclusiveNames.has(p.name);
+    const idx = SPIRIT_RARITIES.findIndex(r => r.name === p.name);
+    const required = fusionRequired();
+    const canFuse = !isExclusive && p.n >= required && idx >= 0 && idx < SPIRIT_RARITIES.length - 1;
+    const tier = getRarityTier(p.mult);
+    const card = document.createElement('div'); 
+    card.className = `pet-card ${tier.cls}`;
+    const stars = state.spiritStars[p.name] || 0;
+    const xp = state.spiritXP[p.name] || 0;
+    const xpNeeded = getSpiritXPNeeded(stars);
+    const xpPct = stars >= 5 ? 100 : Math.min(100, (xp / xpNeeded) * 100);
+    const total = Math.pow(getSpiritMultWithStars(p), p.n).toFixed(2);
+    
+    card.innerHTML = `
+      <div style="font-size:2.2rem;flex-shrink:0;width:44px;text-align:center;">${p.emoji}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+          <span class="rarity-badge" style="background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}44;">${tier.label}</span>
+          ${stars > 0 ? `<span style="font-size:0.65rem;">${'⭐'.repeat(stars)}</span>` : ''}
+          ${isExclusive ? `<span style="font-size:0.5rem;background:rgba(255,180,0,0.2);border:1px solid rgba(255,180,0,0.4);color:#ffd700;padding:2px 6px;border-radius:12px;">✨ UNIQUE</span>` : ''}
+        </div>
+        <div style="font-size:0.78rem;font-weight:700;color:${tier.color};margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
+        <div style="font-size:0.6rem;opacity:0.6;margin-top:1px;">×${getSpiritMultWithStars(p).toFixed(2)} · Qté: ${p.n} · Bonus: ×${total}</div>
+        <div class="spirit-xp-bar-wrap" style="margin-top:5px;"><div class="spirit-xp-bar"><div class="spirit-xp-fill" style="width:${xpPct}%"></div></div></div>
+        <div style="font-size:0.44rem;opacity:0.45;margin-top:2px;">${stars >= 5 ? '⭐ MAX' : xp+'/'+xpNeeded+' XP vers ⭐'+(stars+1)}</div>
+      </div>
+      <div style="flex-shrink:0;">
+        <button class="fuse-btn ${canFuse ? 'ready' : ''}" ${canFuse ? '' : 'disabled'} style="padding:6px 8px;font-size:0.58rem;">
+          ${canFuse ? `✨ ×${required}` : (isExclusive ? '🔒 UNIQUE' : `×${required}`)}
+        </button>
+      </div>`;
+    
+    const fuseBtn = card.querySelector('.fuse-btn');
+    if(canFuse){
+      fuseBtn.addEventListener('click', () => tryFuse(p.name));
+    }
+    c.appendChild(card);
+  });
+}
+    
 // V2: Worlds panel
 function renderWorlds(){
   const c=document.getElementById('worlds-content'); if(!c) return;
