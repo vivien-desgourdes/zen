@@ -1676,7 +1676,7 @@ let state = {
   { type: null, endTime: 0, status: 'empty' },
   { type: null, endTime: 0, status: 'empty' },
   { type: null, endTime: 0, status: 'empty' }
-]
+],
   // 🔥 NOUVEAUTÉS POUR OFFLINE
   lastSaveTimestamp: Date.now(),
   offlineBonusClaimed: false
@@ -3063,8 +3063,8 @@ function saveGame(){
     spiritStars:state.spiritStars,
     totalEvoCount:state.totalEvoCount||0,
     goldenCaptured:state.goldenCaptured||0,
-    activeEventId:state.activeEventId||null
-  lastSaveTimestamp: state.lastSaveTimestamp
+    activeEventId:state.activeEventId||null,
+    lastSaveTimestamp: state.lastSaveTimestamp
   };
   localStorage.setItem('monasteryClickerSaveV2',JSON.stringify(saveData));
 }
