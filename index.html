@@ -1677,6 +1677,10 @@ let state = {
   { type: null, endTime: 0, status: 'empty' },
   { type: null, endTime: 0, status: 'empty' }
 ]
+  // 🔥 NOUVEAUTÉS POUR OFFLINE
+  lastSaveTimestamp: Date.now(),
+  offlineBonusClaimed: false
+  
 };
 const PRESTIGE_BASE = 2000000;
 
@@ -2373,43 +2377,6 @@ function setPetTab(tab){
   renderPets();
 }
 
-/*function rollOne(){
-  state.pityCounter++;
-  const pityMax = 50-Math.floor(getTalentEffect('pityReduce'));
-
-  // Build pool: base rarities + event exclusives + world exclusives
-  let pool = [...SPIRIT_RARITIES];
-  const ev = getActiveEvent();
-  const world = getCurrentWorld();
-  const exclusives = [
-    ...(ev?.exclusiveSpirits || []),
-    ...(world?.exclusiveSpirits || [])
-  ];
-  if(exclusives.length){
-    const chanceEach = 0.025;
-    pool = pool.map(r=>({...r, chance: r.chance*(1 - chanceEach*exclusives.length)}));
-    exclusives.forEach(es=> pool.push({...es, chance: chanceEach}));
-    const total = pool.reduce((s,r)=>s+r.chance,0);
-    pool.forEach(r=>r.chance/=total);
-  }
-
-  let sel = pool[0];
-  const isGuaranteed = state.pityCounter >= pityMax;
-  if(isGuaranteed){
-    // safety: if SPIRIT_RARITIES[25] doesn't exist, roll normally
-    sel = SPIRIT_RARITIES[25] || pool[Math.floor(Math.random()*pool.length)];
-    state.pityCounter = 0;
-  } else {
-    let r = Math.random(), acc = 0;
-    for(const p of pool){ acc+=p.chance; if(r<=acc){sel=p;break;} }
-    if(SPIRIT_RARITIES.findIndex(s=>s.name===sel.name) >= 25) state.pityCounter = 0;
-  }
-
-  addSpiritXP(sel.name, 10+Math.floor(sel.mult*2));
-  state.pets.push({...sel});
-  if(!state.discoveredSkins.includes(sel.name)) state.discoveredSkins.push(sel.name);
-  return sel;
-}*/
 function rollOne(){
   state.pityCounter++;
   const pityMax = 50-Math.floor(getTalentEffect('pityReduce'));
@@ -2512,30 +2479,6 @@ function showRarityReveal(sel){
   if(el){el.classList.remove('show');void el.offsetWidth;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3000);}
 }
 
-/*function tryFuse(rarityName){
-  const idx=SPIRIT_RARITIES.findIndex(r=>r.name===rarityName);
-  if(idx<0||idx>=SPIRIT_RARITIES.length-1) return;
-  const required=fusionRequired();
-  const count=state.pets.filter(p=>p.name===rarityName).length;
-  if(count<required) return;
-  let removed=0;
-  state.pets=state.pets.filter(p=>{ if(p.name===rarityName&&removed<required){removed++;return false;} return true; });
-  const next=SPIRIT_RARITIES[idx+1];
-  state.pets.push({...next});
-  if(!state.discoveredSkins.includes(next.name)) state.discoveredSkins.push(next.name);
-  addSpiritXP(next.name, 50);
-  const fe=document.getElementById('fuse-emoji'),fn=document.getElementById('fuse-name'),fb=document.getElementById('fuse-bonus');
-  if(fe)fe.textContent=next.emoji;
-  if(fn)fn.textContent=next.name;
-  if(fb)fb.textContent=`×${next.mult} sagesse`;
-  const fl=document.getElementById('fuse-flash');
-  if(fl){fl.classList.remove('show');void fl.offsetWidth;fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),2200);}
-  createParticles(window.innerWidth/2,window.innerHeight/2,16,next.color||'#cc88ff');
-  vibrateFusion();
-  showLorePopup(next);
-  renderPets(); updateUI(); saveGame();
-}*/
-
 function tryFuse(spiritName){
   // Vérifier si c'est un esprit exclusif
   const exclusiveNames = new Set();
@@ -2584,48 +2527,6 @@ function tryFuse(spiritName){
   renderPets(); updateUI(); saveGame();
 }
     
-/*function renderPets(){
-  const c=document.getElementById('pets-tab-content'); if(!c) return;
-  if(currentPetTab==='journal'){ renderJournal(c); return; }
-  if(currentPetTab==='evolution'){ renderEvolution(c); return; }
-  c.style.display=''; c.style.flexDirection=''; c.style.gap='';
-  c.innerHTML='';
-  if(!state.pets.length){ c.innerHTML='<div style="opacity:0.4;text-align:center;padding:20px;grid-column:span 2;">Aucun esprit invoqué.</div>'; return; }
-  const counts={};
-  state.pets.forEach(p=>{ if(!counts[p.name]) counts[p.name]={...p,n:0}; counts[p.name].n++; });
-  Object.values(counts).forEach(p=>{
-    const idx=SPIRIT_RARITIES.findIndex(r=>r.name===p.name);
-    const required=fusionRequired();
-    const canFuse=p.n>=required&&idx<SPIRIT_RARITIES.length-1;
-    const tier = getRarityTier(p.mult);
-    const card=document.createElement('div'); card.className=`pet-card ${tier.cls}`;
-    const stars=state.spiritStars[p.name]||0;
-    const xp=state.spiritXP[p.name]||0;
-    const xpNeeded=getSpiritXPNeeded(stars);
-    const xpPct=stars>=5?100:Math.min(100,(xp/xpNeeded)*100);
-    const total=Math.pow(getSpiritMultWithStars(p),p.n).toFixed(2);
-    card.innerHTML=`
-      <div style="font-size:2.2rem;flex-shrink:0;width:44px;text-align:center;">${p.emoji}</div>
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
-          <span class="rarity-badge" style="background:${tier.color}22;color:${tier.color};border:1px solid ${tier.color}44;">${tier.label}</span>
-          ${stars>0?`<span style="font-size:0.65rem;">${'⭐'.repeat(stars)}</span>`:''}
-        </div>
-        <div style="font-size:0.78rem;font-weight:700;color:${tier.color};margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${p.name}</div>
-        <div style="font-size:0.6rem;opacity:0.6;margin-top:1px;">×${getSpiritMultWithStars(p).toFixed(2)} · Qté: ${p.n} · Bonus: ×${total}</div>
-        <div class="spirit-xp-bar-wrap" style="margin-top:5px;"><div class="spirit-xp-bar"><div class="spirit-xp-fill" style="width:${xpPct}%"></div></div></div>
-        <div style="font-size:0.44rem;opacity:0.45;margin-top:2px;">${stars>=5?'⭐ MAX':xp+'/'+xpNeeded+' XP vers ⭐'+(stars+1)}</div>
-      </div>
-      <div style="flex-shrink:0;">
-        <button class="fuse-btn${canFuse?' ready':''}" ${canFuse?'':'disabled'} style="padding:6px 8px;font-size:0.58rem;">
-          ${canFuse?`✨ ×${required}`:`×${required}`}
-        </button>
-      </div>`;
-    card.querySelector('.fuse-btn').addEventListener('click',()=>tryFuse(p.name));
-    c.appendChild(card);
-  });
-}*/
-
 function renderPets(){
   const c = document.getElementById('pets-tab-content'); if(!c) return;
   if(currentPetTab === 'journal'){ renderJournal(c); return; }
@@ -3098,8 +2999,52 @@ function spawnGoldenSpirit(){
   setTimeout(spawnGoldenSpirit,nextSpawn);
 }
 
+// ==================== OFFLINE GAINS ====================
+function checkOfflineProgress(){
+  const now = Date.now();
+  const lastSave = state.lastSaveTimestamp || now;
+  const elapsedSeconds = Math.floor((now - lastSave) / 1000);
+  
+  // Maximum 12 heures d'offline (pas plus pour éviter l'explosion)
+  const maxOfflineSeconds = 12 * 3600;
+  const offlineSeconds = Math.min(elapsedSeconds, maxOfflineSeconds);
+  
+  if(offlineSeconds <= 5) return; // Pas de gain si moins de 5 secondes
+  
+  // Calcul des gains
+  const ps = getPS();
+  let offlineGain = Math.floor(ps * offlineSeconds);
+  
+  // Bonus si talent "Sagesse du Sage" débloqué
+  const offlineBonus = 1 + (getTalentEffect('psMult') * 0.5);
+  offlineGain = Math.floor(offlineGain * offlineBonus);
+  
+  if(offlineGain <= 0) return;
+  
+  // Application des gains
+  state.score += offlineGain;
+  state.allTimeScore += offlineGain;
+  
+  // Affichage d'une notification
+  const hours = Math.floor(offlineSeconds / 3600);
+  const minutes = Math.floor((offlineSeconds % 3600) / 60);
+  let timeString = "";
+  if(hours > 0) timeString += `${hours}h `;
+  if(minutes > 0 || hours === 0) timeString += `${minutes}min`;
+  if(offlineSeconds < 60) timeString = `${offlineSeconds}sec`;
+  
+  showBanner(`⏰ Offline : ${fmt(offlineGain)} sagesse gagnée en ${timeString} !`);
+  
+  // Effet visuel
+  createParticles(window.innerWidth/2, window.innerHeight/2, 30, '#00d488');
+  
+  updateUI();
+  saveGame();
+}
+    
 // ==================== SAVE / LOAD ====================
 function saveGame(){
+  state.lastSaveTimestamp = Date.now();
   const saveData={
     chestSlots: state.chestSlots,
     score:state.score, totalClicks:state.totalClicks, allTimeScore:state.allTimeScore,
@@ -3119,6 +3064,7 @@ function saveGame(){
     totalEvoCount:state.totalEvoCount||0,
     goldenCaptured:state.goldenCaptured||0,
     activeEventId:state.activeEventId||null
+  lastSaveTimestamp: state.lastSaveTimestamp
   };
   localStorage.setItem('monasteryClickerSaveV2',JSON.stringify(saveData));
 }
@@ -3142,6 +3088,7 @@ function loadGame(){
     state.totalEvoCount=data.totalEvoCount||0;
     state.goldenCaptured=data.goldenCaptured||0;
     state.activeEventId=data.activeEventId||null;
+    state.lastSaveTimestamp = data.lastSaveTimestamp || Date.now();
     if(data.items) state.items.forEach(item=>{ const s=data.items.find(i=>i.id===item.id); if(s) item.qty=s.qty; });
     if(data.pets) state.pets=data.pets;
     if(data.achievements) state.achievements.forEach(ach=>{ const s=data.achievements.find(a=>a.id===ach.id); if(s) ach.completed=s.completed; });
@@ -3635,6 +3582,11 @@ window.onload=()=>{
   if(loaded){
     initShop(); renderPets(); renderAchievements(); updateUI();
     applyWorldTheme(state.currentWorld);
+  // 🔥 VÉRIFIER LES GAINS OFFLINE APRÈS CHARGEMENT
+    setTimeout(() => {
+      checkOfflineProgress();
+    }, 500);
+  
   }
   initMusic();
   initChests();
